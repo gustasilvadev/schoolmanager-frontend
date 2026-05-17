@@ -9,24 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/_auth'
-import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TeacherTurmasIndexRouteImport } from './routes/teacher/turmas/index'
+import { Route as TeacherPerfilIndexRouteImport } from './routes/teacher/perfil/index'
+import { Route as TeacherDashboardIndexRouteImport } from './routes/teacher/dashboard/index'
+import { Route as TeacherAvisosIndexRouteImport } from './routes/teacher/avisos/index'
+import { Route as TeacherAvaliacoesIndexRouteImport } from './routes/teacher/avaliacoes/index'
+import { Route as AdminUsuariosIndexRouteImport } from './routes/admin/usuarios/index'
+import { Route as AdminTurmasIndexRouteImport } from './routes/admin/turmas/index'
+import { Route as AdminProfessoresIndexRouteImport } from './routes/admin/professores/index'
+import { Route as AdminPerfilIndexRouteImport } from './routes/admin/perfil/index'
+import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as AdminAvisosIndexRouteImport } from './routes/admin/avisos/index'
+import { Route as AdminAvaliacoesIndexRouteImport } from './routes/admin/avaliacoes/index'
+import { Route as AdminAlunosIndexRouteImport } from './routes/admin/alunos/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
-import { Route as AppTurmasIndexRouteImport } from './routes/_app/turmas/index'
-import { Route as AppProfessoresIndexRouteImport } from './routes/_app/professores/index'
-import { Route as AppPerfilIndexRouteImport } from './routes/_app/perfil/index'
-import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
-import { Route as AppAvisosIndexRouteImport } from './routes/_app/avisos/index'
-import { Route as AppAvaliacoesIndexRouteImport } from './routes/_app/avaliacoes/index'
-import { Route as AppAlunosIndexRouteImport } from './routes/_app/alunos/index'
 
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
+const TeacherRoute = TeacherRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,141 +47,225 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeacherTurmasIndexRoute = TeacherTurmasIndexRouteImport.update({
+  id: '/turmas/',
+  path: '/turmas/',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherPerfilIndexRoute = TeacherPerfilIndexRouteImport.update({
+  id: '/perfil/',
+  path: '/perfil/',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherDashboardIndexRoute = TeacherDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherAvisosIndexRoute = TeacherAvisosIndexRouteImport.update({
+  id: '/avisos/',
+  path: '/avisos/',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const TeacherAvaliacoesIndexRoute = TeacherAvaliacoesIndexRouteImport.update({
+  id: '/avaliacoes/',
+  path: '/avaliacoes/',
+  getParentRoute: () => TeacherRoute,
+} as any)
+const AdminUsuariosIndexRoute = AdminUsuariosIndexRouteImport.update({
+  id: '/usuarios/',
+  path: '/usuarios/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTurmasIndexRoute = AdminTurmasIndexRouteImport.update({
+  id: '/turmas/',
+  path: '/turmas/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfessoresIndexRoute = AdminProfessoresIndexRouteImport.update({
+  id: '/professores/',
+  path: '/professores/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPerfilIndexRoute = AdminPerfilIndexRouteImport.update({
+  id: '/perfil/',
+  path: '/perfil/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAvisosIndexRoute = AdminAvisosIndexRouteImport.update({
+  id: '/avisos/',
+  path: '/avisos/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAvaliacoesIndexRoute = AdminAvaliacoesIndexRouteImport.update({
+  id: '/avaliacoes/',
+  path: '/avaliacoes/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAlunosIndexRoute = AdminAlunosIndexRouteImport.update({
+  id: '/alunos/',
+  path: '/alunos/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
   getParentRoute: () => AuthRoute,
 } as any)
-const AppTurmasIndexRoute = AppTurmasIndexRouteImport.update({
-  id: '/turmas/',
-  path: '/turmas/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppProfessoresIndexRoute = AppProfessoresIndexRouteImport.update({
-  id: '/professores/',
-  path: '/professores/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPerfilIndexRoute = AppPerfilIndexRouteImport.update({
-  id: '/perfil/',
-  path: '/perfil/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAvisosIndexRoute = AppAvisosIndexRouteImport.update({
-  id: '/avisos/',
-  path: '/avisos/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAvaliacoesIndexRoute = AppAvaliacoesIndexRouteImport.update({
-  id: '/avaliacoes/',
-  path: '/avaliacoes/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAlunosIndexRoute = AppAlunosIndexRouteImport.update({
-  id: '/alunos/',
-  path: '/alunos/',
-  getParentRoute: () => AppRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/alunos/': typeof AppAlunosIndexRoute
-  '/avaliacoes/': typeof AppAvaliacoesIndexRoute
-  '/avisos/': typeof AppAvisosIndexRoute
-  '/dashboard/': typeof AppDashboardIndexRoute
-  '/perfil/': typeof AppPerfilIndexRoute
-  '/professores/': typeof AppProfessoresIndexRoute
-  '/turmas/': typeof AppTurmasIndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/teacher': typeof TeacherRouteWithChildren
   '/login/': typeof AuthLoginIndexRoute
+  '/admin/alunos/': typeof AdminAlunosIndexRoute
+  '/admin/avaliacoes/': typeof AdminAvaliacoesIndexRoute
+  '/admin/avisos/': typeof AdminAvisosIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/perfil/': typeof AdminPerfilIndexRoute
+  '/admin/professores/': typeof AdminProfessoresIndexRoute
+  '/admin/turmas/': typeof AdminTurmasIndexRoute
+  '/admin/usuarios/': typeof AdminUsuariosIndexRoute
+  '/teacher/avaliacoes/': typeof TeacherAvaliacoesIndexRoute
+  '/teacher/avisos/': typeof TeacherAvisosIndexRoute
+  '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
+  '/teacher/perfil/': typeof TeacherPerfilIndexRoute
+  '/teacher/turmas/': typeof TeacherTurmasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/alunos': typeof AppAlunosIndexRoute
-  '/avaliacoes': typeof AppAvaliacoesIndexRoute
-  '/avisos': typeof AppAvisosIndexRoute
-  '/dashboard': typeof AppDashboardIndexRoute
-  '/perfil': typeof AppPerfilIndexRoute
-  '/professores': typeof AppProfessoresIndexRoute
-  '/turmas': typeof AppTurmasIndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/teacher': typeof TeacherRouteWithChildren
   '/login': typeof AuthLoginIndexRoute
+  '/admin/alunos': typeof AdminAlunosIndexRoute
+  '/admin/avaliacoes': typeof AdminAvaliacoesIndexRoute
+  '/admin/avisos': typeof AdminAvisosIndexRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/perfil': typeof AdminPerfilIndexRoute
+  '/admin/professores': typeof AdminProfessoresIndexRoute
+  '/admin/turmas': typeof AdminTurmasIndexRoute
+  '/admin/usuarios': typeof AdminUsuariosIndexRoute
+  '/teacher/avaliacoes': typeof TeacherAvaliacoesIndexRoute
+  '/teacher/avisos': typeof TeacherAvisosIndexRoute
+  '/teacher/dashboard': typeof TeacherDashboardIndexRoute
+  '/teacher/perfil': typeof TeacherPerfilIndexRoute
+  '/teacher/turmas': typeof TeacherTurmasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_app': typeof AppRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
-  '/_app/alunos/': typeof AppAlunosIndexRoute
-  '/_app/avaliacoes/': typeof AppAvaliacoesIndexRoute
-  '/_app/avisos/': typeof AppAvisosIndexRoute
-  '/_app/dashboard/': typeof AppDashboardIndexRoute
-  '/_app/perfil/': typeof AppPerfilIndexRoute
-  '/_app/professores/': typeof AppProfessoresIndexRoute
-  '/_app/turmas/': typeof AppTurmasIndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/teacher': typeof TeacherRouteWithChildren
   '/_auth/login/': typeof AuthLoginIndexRoute
+  '/admin/alunos/': typeof AdminAlunosIndexRoute
+  '/admin/avaliacoes/': typeof AdminAvaliacoesIndexRoute
+  '/admin/avisos/': typeof AdminAvisosIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/perfil/': typeof AdminPerfilIndexRoute
+  '/admin/professores/': typeof AdminProfessoresIndexRoute
+  '/admin/turmas/': typeof AdminTurmasIndexRoute
+  '/admin/usuarios/': typeof AdminUsuariosIndexRoute
+  '/teacher/avaliacoes/': typeof TeacherAvaliacoesIndexRoute
+  '/teacher/avisos/': typeof TeacherAvisosIndexRoute
+  '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
+  '/teacher/perfil/': typeof TeacherPerfilIndexRoute
+  '/teacher/turmas/': typeof TeacherTurmasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/alunos/'
-    | '/avaliacoes/'
-    | '/avisos/'
-    | '/dashboard/'
-    | '/perfil/'
-    | '/professores/'
-    | '/turmas/'
+    | '/admin'
+    | '/teacher'
     | '/login/'
+    | '/admin/alunos/'
+    | '/admin/avaliacoes/'
+    | '/admin/avisos/'
+    | '/admin/dashboard/'
+    | '/admin/perfil/'
+    | '/admin/professores/'
+    | '/admin/turmas/'
+    | '/admin/usuarios/'
+    | '/teacher/avaliacoes/'
+    | '/teacher/avisos/'
+    | '/teacher/dashboard/'
+    | '/teacher/perfil/'
+    | '/teacher/turmas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/alunos'
-    | '/avaliacoes'
-    | '/avisos'
-    | '/dashboard'
-    | '/perfil'
-    | '/professores'
-    | '/turmas'
+    | '/admin'
+    | '/teacher'
     | '/login'
+    | '/admin/alunos'
+    | '/admin/avaliacoes'
+    | '/admin/avisos'
+    | '/admin/dashboard'
+    | '/admin/perfil'
+    | '/admin/professores'
+    | '/admin/turmas'
+    | '/admin/usuarios'
+    | '/teacher/avaliacoes'
+    | '/teacher/avisos'
+    | '/teacher/dashboard'
+    | '/teacher/perfil'
+    | '/teacher/turmas'
   id:
     | '__root__'
     | '/'
-    | '/_app'
     | '/_auth'
-    | '/_app/alunos/'
-    | '/_app/avaliacoes/'
-    | '/_app/avisos/'
-    | '/_app/dashboard/'
-    | '/_app/perfil/'
-    | '/_app/professores/'
-    | '/_app/turmas/'
+    | '/admin'
+    | '/teacher'
     | '/_auth/login/'
+    | '/admin/alunos/'
+    | '/admin/avaliacoes/'
+    | '/admin/avisos/'
+    | '/admin/dashboard/'
+    | '/admin/perfil/'
+    | '/admin/professores/'
+    | '/admin/turmas/'
+    | '/admin/usuarios/'
+    | '/teacher/avaliacoes/'
+    | '/teacher/avisos/'
+    | '/teacher/dashboard/'
+    | '/teacher/perfil/'
+    | '/teacher/turmas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
+  TeacherRoute: typeof TeacherRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/teacher': {
+      id: '/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof TeacherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth': {
       id: '/_auth'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -178,6 +275,97 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teacher/turmas/': {
+      id: '/teacher/turmas/'
+      path: '/turmas'
+      fullPath: '/teacher/turmas/'
+      preLoaderRoute: typeof TeacherTurmasIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/perfil/': {
+      id: '/teacher/perfil/'
+      path: '/perfil'
+      fullPath: '/teacher/perfil/'
+      preLoaderRoute: typeof TeacherPerfilIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/dashboard/': {
+      id: '/teacher/dashboard/'
+      path: '/dashboard'
+      fullPath: '/teacher/dashboard/'
+      preLoaderRoute: typeof TeacherDashboardIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/avisos/': {
+      id: '/teacher/avisos/'
+      path: '/avisos'
+      fullPath: '/teacher/avisos/'
+      preLoaderRoute: typeof TeacherAvisosIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/teacher/avaliacoes/': {
+      id: '/teacher/avaliacoes/'
+      path: '/avaliacoes'
+      fullPath: '/teacher/avaliacoes/'
+      preLoaderRoute: typeof TeacherAvaliacoesIndexRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/admin/usuarios/': {
+      id: '/admin/usuarios/'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios/'
+      preLoaderRoute: typeof AdminUsuariosIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/turmas/': {
+      id: '/admin/turmas/'
+      path: '/turmas'
+      fullPath: '/admin/turmas/'
+      preLoaderRoute: typeof AdminTurmasIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/professores/': {
+      id: '/admin/professores/'
+      path: '/professores'
+      fullPath: '/admin/professores/'
+      preLoaderRoute: typeof AdminProfessoresIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/perfil/': {
+      id: '/admin/perfil/'
+      path: '/perfil'
+      fullPath: '/admin/perfil/'
+      preLoaderRoute: typeof AdminPerfilIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard/': {
+      id: '/admin/dashboard/'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard/'
+      preLoaderRoute: typeof AdminDashboardIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/avisos/': {
+      id: '/admin/avisos/'
+      path: '/avisos'
+      fullPath: '/admin/avisos/'
+      preLoaderRoute: typeof AdminAvisosIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/avaliacoes/': {
+      id: '/admin/avaliacoes/'
+      path: '/avaliacoes'
+      fullPath: '/admin/avaliacoes/'
+      preLoaderRoute: typeof AdminAvaliacoesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/alunos/': {
+      id: '/admin/alunos/'
+      path: '/alunos'
+      fullPath: '/admin/alunos/'
+      preLoaderRoute: typeof AdminAlunosIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_auth/login/': {
       id: '/_auth/login/'
       path: '/login'
@@ -185,79 +373,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_app/turmas/': {
-      id: '/_app/turmas/'
-      path: '/turmas'
-      fullPath: '/turmas/'
-      preLoaderRoute: typeof AppTurmasIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/professores/': {
-      id: '/_app/professores/'
-      path: '/professores'
-      fullPath: '/professores/'
-      preLoaderRoute: typeof AppProfessoresIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/perfil/': {
-      id: '/_app/perfil/'
-      path: '/perfil'
-      fullPath: '/perfil/'
-      preLoaderRoute: typeof AppPerfilIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/dashboard/': {
-      id: '/_app/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof AppDashboardIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/avisos/': {
-      id: '/_app/avisos/'
-      path: '/avisos'
-      fullPath: '/avisos/'
-      preLoaderRoute: typeof AppAvisosIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/avaliacoes/': {
-      id: '/_app/avaliacoes/'
-      path: '/avaliacoes'
-      fullPath: '/avaliacoes/'
-      preLoaderRoute: typeof AppAvaliacoesIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/alunos/': {
-      id: '/_app/alunos/'
-      path: '/alunos'
-      fullPath: '/alunos/'
-      preLoaderRoute: typeof AppAlunosIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
   }
 }
-
-interface AppRouteChildren {
-  AppAlunosIndexRoute: typeof AppAlunosIndexRoute
-  AppAvaliacoesIndexRoute: typeof AppAvaliacoesIndexRoute
-  AppAvisosIndexRoute: typeof AppAvisosIndexRoute
-  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
-  AppPerfilIndexRoute: typeof AppPerfilIndexRoute
-  AppProfessoresIndexRoute: typeof AppProfessoresIndexRoute
-  AppTurmasIndexRoute: typeof AppTurmasIndexRoute
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppAlunosIndexRoute: AppAlunosIndexRoute,
-  AppAvaliacoesIndexRoute: AppAvaliacoesIndexRoute,
-  AppAvisosIndexRoute: AppAvisosIndexRoute,
-  AppDashboardIndexRoute: AppDashboardIndexRoute,
-  AppPerfilIndexRoute: AppPerfilIndexRoute,
-  AppProfessoresIndexRoute: AppProfessoresIndexRoute,
-  AppTurmasIndexRoute: AppTurmasIndexRoute,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface AuthRouteChildren {
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
@@ -269,10 +386,54 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface AdminRouteChildren {
+  AdminAlunosIndexRoute: typeof AdminAlunosIndexRoute
+  AdminAvaliacoesIndexRoute: typeof AdminAvaliacoesIndexRoute
+  AdminAvisosIndexRoute: typeof AdminAvisosIndexRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  AdminPerfilIndexRoute: typeof AdminPerfilIndexRoute
+  AdminProfessoresIndexRoute: typeof AdminProfessoresIndexRoute
+  AdminTurmasIndexRoute: typeof AdminTurmasIndexRoute
+  AdminUsuariosIndexRoute: typeof AdminUsuariosIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAlunosIndexRoute: AdminAlunosIndexRoute,
+  AdminAvaliacoesIndexRoute: AdminAvaliacoesIndexRoute,
+  AdminAvisosIndexRoute: AdminAvisosIndexRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  AdminPerfilIndexRoute: AdminPerfilIndexRoute,
+  AdminProfessoresIndexRoute: AdminProfessoresIndexRoute,
+  AdminTurmasIndexRoute: AdminTurmasIndexRoute,
+  AdminUsuariosIndexRoute: AdminUsuariosIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface TeacherRouteChildren {
+  TeacherAvaliacoesIndexRoute: typeof TeacherAvaliacoesIndexRoute
+  TeacherAvisosIndexRoute: typeof TeacherAvisosIndexRoute
+  TeacherDashboardIndexRoute: typeof TeacherDashboardIndexRoute
+  TeacherPerfilIndexRoute: typeof TeacherPerfilIndexRoute
+  TeacherTurmasIndexRoute: typeof TeacherTurmasIndexRoute
+}
+
+const TeacherRouteChildren: TeacherRouteChildren = {
+  TeacherAvaliacoesIndexRoute: TeacherAvaliacoesIndexRoute,
+  TeacherAvisosIndexRoute: TeacherAvisosIndexRoute,
+  TeacherDashboardIndexRoute: TeacherDashboardIndexRoute,
+  TeacherPerfilIndexRoute: TeacherPerfilIndexRoute,
+  TeacherTurmasIndexRoute: TeacherTurmasIndexRoute,
+}
+
+const TeacherRouteWithChildren =
+  TeacherRoute._addFileChildren(TeacherRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
+  TeacherRoute: TeacherRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
