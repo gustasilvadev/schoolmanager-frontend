@@ -1,5 +1,6 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { getStoredSession } from '../context/AuthContext'
+import { TeacherLayout } from './teacher/-components/TeacherLayout'
 
 export const Route = createFileRoute('/teacher')({
   beforeLoad: () => {
@@ -10,7 +11,3 @@ export const Route = createFileRoute('/teacher')({
   },
   component: TeacherLayout,
 })
-
-function TeacherLayout() {
-  return <Outlet />
-}
