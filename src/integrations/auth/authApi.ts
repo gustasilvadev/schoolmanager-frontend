@@ -1,4 +1,4 @@
-const AUTH_API = import.meta.env.VITE_AUTH_API_URL
+const API_URL = import.meta.env.VITE_API_URL
 
 export interface LoginResponse {
   token: string
@@ -12,7 +12,7 @@ export interface LoginResponse {
 }
 
 export async function loginApi(email: string, password: string): Promise<LoginResponse> {
-  const res = await fetch(`${AUTH_API}/auth/login`, {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
