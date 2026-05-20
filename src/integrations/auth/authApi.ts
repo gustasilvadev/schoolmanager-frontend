@@ -1,26 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { createApi } from '../../lib/api'
 
-export interface LoginResponse {
-  token: string
-  user: {
-    user_id: number
-    user_email: string
-    role: 'ADMIN' | 'TEACHER'
-    teacher_id?: number
-    user_status: number
-  }
-}
+const api = createApi('auth')
+import type { LoginResponse } from '../../types/auth'
 
 export async function loginApi(email: string, password: string): Promise<LoginResponse> {
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  })
-
-  const data = await res.json()
-
-  if (!res.ok) throw new Error(data.error ?? 'Credenciais inválidas')
-
+  const { data } = await api.post<LoginResponse>('/auth/login', { email, password })
   return data
 }
