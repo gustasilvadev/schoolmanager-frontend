@@ -12,16 +12,21 @@ export function createApi(service: string) {
     if (session?.token) {
       config.headers.Authorization = `Bearer ${session.token}`
     }
+    console.log('[API] →', config.method?.toUpperCase(), (config.baseURL ?? '') + (config.url ?? ''))
     return config
   })
 
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      const message = axios.isAxiosError(error)
-        ? (error.response?.data?.error ?? error.message)
-        : String(error)
-      return Promise.reject(new Error(message))
+      if (axios.isAxiosError(error)) {
+        console.log('[API] ✗ status:', error.response?.status ?? 'sem resposta')
+        console.log('[API] ✗ body:', JSON.stringify(error.response?.data))
+        console.log('[API] ✗ code:', error.code)
+        const message = error.response?.data?.error ?? error.message
+        return Promise.reject(new Error(message))
+      }
+      return Promise.reject(new Error(String(error)))
     },
   )
 

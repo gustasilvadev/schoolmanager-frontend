@@ -13,15 +13,18 @@ export default defineConfig(({ mode }) => {
     resolve: { tsconfigPaths: true },
     plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
     server: {
-      port: 9518,
+      port: 5173,
       proxy: {
         '/api': {
           target: new URL(env.API_PROXY_BASE).origin,
           changeOrigin: true,
           // /api/{service}/{...rest} → /{base}/{service}/api/{...rest}
           rewrite: (path) => {
-            const base = new URL(env.API_PROXY_BASE).pathname
-            return path.replace(/^\/api\/([^/]+)(.*)/, `${base}/$1/api$2`)
+            const base = new URL(env.API_PROXY_BASE).pathname.replace(/\/$/, '')
+            const match = path.match(/^\/api\/([^/]+)(\/.*)?$/)
+            if (!match) return path
+            const [, service, rest = ''] = match
+            return `${base}/${service}/api${rest}`
           },
         },
       },
