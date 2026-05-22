@@ -4,6 +4,6 @@ import type { LoginResponse } from '../../types/auth'
 const api = createApi('auth')
 
 export async function loginApi(email: string, password: string): Promise<LoginResponse> {
-  const { data } = await api.post<LoginResponse>('/auth/login', { email, password })
+  const { data } = await api.post<LoginResponse>('/login', { email, password })
   return data
 }

@@ -8,6 +8,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const base = new URL(env.API_PROXY_BASE).pathname.replace(/\/$/, '')
 
   return {
     resolve: { tsconfigPaths: true },
@@ -18,13 +19,10 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: new URL(env.API_PROXY_BASE).origin,
           changeOrigin: true,
-          // /api/{service}/{...rest} → /{base}/{service}/api/{...rest}
           rewrite: (path) => {
-            const base = new URL(env.API_PROXY_BASE).pathname.replace(/\/$/, '')
-            const match = path.match(/^\/api\/([^/]+)(\/.*)?$/)
+            const match = path.match(/^\/api\/([^/]+)/)
             if (!match) return path
-            const [, service, rest = ''] = match
-            return `${base}/${service}/api${rest}`
+            return `${base}/${match[1]}${path}`
           },
         },
       },
