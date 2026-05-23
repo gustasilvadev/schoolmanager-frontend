@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ProfilePage } from '@/components/profile/ProfilePage'
 
 export const Route = createFileRoute('/admin/perfil/')({
-  component: PerfilPage,
+  component: AdminPerfilPage,
 })
 
-function PerfilPage() {
-  return <div>Perfil</div>
+function AdminPerfilPage() {
+  return <ProfilePage accent="blue" />
 }
