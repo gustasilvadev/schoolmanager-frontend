@@ -4,11 +4,11 @@ import { useAuth } from '#/hooks/useAuth'
 import { Button } from '#/components/ui/Button'
 
 export function TeacherHeader() {
-  const { session, logout } = useAuth()
+  const { session, clearAuth } = useAuth()
   const navigate = useNavigate()
 
   function handleLogout() {
-    logout()
+    clearAuth()
     navigate({ to: '/login' })
   }
 
