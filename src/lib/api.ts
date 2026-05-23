@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getStoredSession } from '../context/AuthContext'
+import { clearSession, getStoredSession } from '../context/AuthContext'
 
 export function createApi(service: string) {
   const instance = axios.create({
@@ -23,6 +23,12 @@ export function createApi(service: string) {
         console.log('[API] ✗ status:', error.response?.status ?? 'sem resposta')
         console.log('[API] ✗ body:', JSON.stringify(error.response?.data))
         console.log('[API] ✗ code:', error.code)
+
+        if (error.response?.status === 401) {
+          clearSession()
+          window.location.href = '/login'
+        }
+
         const message = error.response?.data?.error ?? error.message
         return Promise.reject(new Error(message))
       }
