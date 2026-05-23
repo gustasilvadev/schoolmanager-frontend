@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { clearSession, getStoredSession } from '../context/AuthContext'
+import { clearSession, getStoredSession } from '@/context/AuthContext'
 
 export function createApi(service: string) {
   const instance = axios.create({
@@ -12,7 +12,11 @@ export function createApi(service: string) {
     if (session?.token) {
       config.headers.Authorization = `Bearer ${session.token}`
     }
-    console.log('[API] →', config.method?.toUpperCase(), (config.baseURL ?? '') + (config.url ?? ''))
+    console.log(
+      '[API] →',
+      config.method?.toUpperCase(),
+      (config.baseURL ?? '') + (config.url ?? ''),
+    )
     return config
   })
 

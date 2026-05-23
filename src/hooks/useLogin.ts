@@ -1,16 +1,17 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { login } from '../integrations/auth/authApi'
+import { login } from '@/integrations/auth/authApi'
 import { useAuth } from './useAuth'
-import type { LoginCredentials } from '../types/auth'
+import type { LoginCredentials } from '@/types/auth'
 
 export function useLogin() {
   const { setAuth } = useAuth()
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: ({ email, password }: LoginCredentials) => login(email, password),
+    mutationFn: ({ email, password }: LoginCredentials) =>
+      login(email, password),
 
     onSuccess: (data) => {
       setAuth({
@@ -21,7 +22,10 @@ export function useLogin() {
       })
 
       navigate({
-        to: data.user.role === 'ADMIN' ? '/admin/dashboard' : '/teacher/dashboard',
+        to:
+          data.user.role === 'ADMIN'
+            ? '/admin/dashboard'
+            : '/teacher/dashboard',
       })
     },
 
