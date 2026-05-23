@@ -1,4 +1,4 @@
-import { cn } from '#/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string
@@ -10,7 +10,10 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
 
   return (
     <div>
-      <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-300">
+      <label
+        htmlFor={inputId}
+        className="mb-1.5 block text-sm font-medium text-slate-300"
+      >
         {label}
       </label>
       <input

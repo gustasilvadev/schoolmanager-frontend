@@ -10,8 +10,8 @@ import {
   UserCog,
   Users,
 } from 'lucide-react'
-import { cn } from '#/lib/utils'
-import { useLogout } from '#/hooks/useLogout'
+import { cn } from '@/lib/utils'
+import { useLogout } from '@/hooks/useLogout'
 
 const navItems = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },

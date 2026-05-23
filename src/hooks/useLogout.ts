@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { logout } from '../integrations/auth/authApi'
+import { logout } from '@/integrations/auth/authApi'
 import { useAuth } from './useAuth'
 
 export function useLogout() {
