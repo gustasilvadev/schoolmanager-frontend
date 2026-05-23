@@ -17,6 +17,7 @@ export function getRouter() {
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
+    defaultNotFoundComponent: () => <p>Página não encontrada</p>,
   })
 
   setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient })
