@@ -9,6 +9,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import { AuthProvider } from '../context/AuthContext'
+import { Toaster } from 'sonner'
 
 import appCss from '../styles.css?url'
 
@@ -42,6 +43,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   shellComponent: RootDocument,
   component: () => (
     <AuthProvider>
+      <Toaster richColors position="top-right" />
       <Outlet />
     </AuthProvider>
   ),

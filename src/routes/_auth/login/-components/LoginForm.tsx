@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { useLogin } from '../../../../hooks/useLogin'
-import { Alert } from '#/components/ui/Alert'
 import { Button } from '#/components/ui/Button'
 import { Input } from '#/components/ui/Input'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { mutate: login, isPending, error } = useLogin()
+  const { mutate: login, isPending } = useLogin()
 
   function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -17,8 +16,6 @@ export function LoginForm() {
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
       <h2 className="mb-6 text-lg font-semibold text-white">Entrar na conta</h2>
-
-      {error && <Alert message={error.message} className="mb-5" />}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input

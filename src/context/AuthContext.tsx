@@ -13,14 +13,14 @@ function saveSession(session: AuthSession) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(session))
 }
 
-function clearSession() {
+export function clearSession() {
   localStorage.removeItem(STORAGE_KEY)
 }
 
 interface AuthContextValue {
   session: AuthSession | null
-  login: (session: AuthSession) => void
-  logout: () => void
+  setAuth: (session: AuthSession) => void
+  clearAuth: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
@@ -28,18 +28,18 @@ export const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(getStoredSession)
 
-  function login(data: AuthSession) {
+  function setAuth(data: AuthSession) {
     saveSession(data)
     setSession(data)
   }
 
-  function logout() {
+  function clearAuth() {
     clearSession()
     setSession(null)
   }
 
   return (
-    <AuthContext.Provider value={{ session, login, logout }}>
+    <AuthContext.Provider value={{ session, setAuth, clearAuth }}>
       {children}
     </AuthContext.Provider>
   )

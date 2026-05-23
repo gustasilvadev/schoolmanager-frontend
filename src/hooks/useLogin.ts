@@ -1,20 +1,19 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { loginApi } from '../integrations/auth/authApi'
+import { toast } from 'sonner'
+import { login } from '../integrations/auth/authApi'
 import { useAuth } from './useAuth'
+import type { LoginCredentials } from '../types/auth'
 
 export function useLogin() {
-  const { login } = useAuth()
+  const { setAuth } = useAuth()
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      loginApi(email, password),
+    mutationFn: ({ email, password }: LoginCredentials) => login(email, password),
 
     onSuccess: (data) => {
-      console.log('[Login] Sucesso:', data.user.user_email, '| Role:', data.user.role)
-
-      login({
+      setAuth({
         token: data.token,
         role: data.user.role,
         userId: data.user.user_id,
@@ -27,7 +26,8 @@ export function useLogin() {
     },
 
     onError: (error: Error) => {
-      console.log('[Login] Falhou:', error.message)
+      console.error('[useLogin] falha na autenticação:', error.message)
+      toast.error('E-mail ou senha inválidos')
     },
   })
 }
