@@ -1,5 +1,6 @@
-import { createContext, useState, type ReactNode } from 'react'
-import type { AuthSession } from '../types/auth'
+import { createContext, useState } from 'react'
+import type { ReactNode } from 'react'
+import type { AuthSession, AuthContextValue } from '@/types/auth'
 
 const STORAGE_KEY = 'sm_session'
 
@@ -15,12 +16,6 @@ function saveSession(session: AuthSession) {
 
 export function clearSession() {
   localStorage.removeItem(STORAGE_KEY)
-}
-
-interface AuthContextValue {
-  session: AuthSession | null
-  setAuth: (session: AuthSession) => void
-  clearAuth: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
@@ -44,4 +39,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   )
 }
-

@@ -5,6 +5,12 @@ export interface AuthSession {
   userEmail: string
 }
 
+export interface AuthContextValue {
+  session: AuthSession | null
+  setAuth: (session: AuthSession) => void
+  clearAuth: () => void
+}
+
 export interface LoginCredentials {
   email: string
   password: string
@@ -21,4 +27,21 @@ export interface LoginUserData {
 export interface LoginResponse {
   token: string
   user: LoginUserData
+}
+
+export interface TeacherProfileData {
+  teacher_id: number
+  teacher_name: string
+  teacher_cpf: string
+  teacher_email: string
+  teacher_status: number
+  user_id: number
+}
+
+export interface MeResponse {
+  user_id: number
+  user_email: string
+  role: 'ADMIN' | 'TEACHER'
+  user_status: number
+  teacher: TeacherProfileData | null
 }
