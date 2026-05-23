@@ -1,7 +1,15 @@
 import { Link } from '@tanstack/react-router'
-import { Bell, BookOpen, ClipboardList, GraduationCap, LayoutDashboard, LogOut, UserCircle } from 'lucide-react'
-import { cn } from '#/lib/utils'
-import { useLogout } from '#/hooks/useLogout'
+import {
+  Bell,
+  BookOpen,
+  ClipboardList,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  UserCircle,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useLogout } from '@/hooks/useLogout'
 
 const navItems = [
   { label: 'Dashboard', to: '/teacher/dashboard', icon: LayoutDashboard },

@@ -1,7 +1,7 @@
 import { LogOut, UserCircle } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
-import { useAuth } from '#/hooks/useAuth'
-import { Button } from '#/components/ui/Button'
+import { useAuth } from '@/hooks/useAuth'
+import { Button } from '@/components/ui/Button'
 
 export function TeacherHeader() {
   const { session, clearAuth } = useAuth()
@@ -22,7 +22,12 @@ export function TeacherHeader() {
 
         <div className="h-4 w-px bg-slate-700" />
 
-        <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          className="gap-2"
+        >
           <LogOut className="h-4 w-4" />
           Sair
         </Button>

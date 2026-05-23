@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { getStoredSession } from '../context/AuthContext'
+import { getStoredSession } from '@/context/AuthContext'
 import { TeacherLayout } from './teacher/-components/TeacherLayout'
 
 export const Route = createFileRoute('/teacher')({
