@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { changePasswordApi } from '@/integrations/users/usersApi'
+import { changePassword } from '@/integrations/users/usersApi'
 
 export function useChangePassword() {
   return useMutation({
@@ -10,7 +10,7 @@ export function useChangePassword() {
     }: {
       oldPassword: string
       newPassword: string
-    }) => changePasswordApi(oldPassword, newPassword),
+    }) => changePassword(oldPassword, newPassword),
     onSuccess: () => {
       toast.success('Senha alterada com sucesso')
     },

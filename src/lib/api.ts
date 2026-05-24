@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { clearSession, getStoredSession } from '@/context/AuthContext'
 
-export function createApi(service: string) {
+export function create(service: string) {
   const instance = axios.create({
     baseURL: `${import.meta.env.VITE_API_BASE}/${service}`,
     headers: { 'Content-Type': 'application/json' },
