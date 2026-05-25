@@ -9,18 +9,18 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
+  // API Gateway: todas as chamadas /api/<service>/<rota> são encaminhadas para
+  // <API_PROXY_BASE>/api/<service>/<rota>.
+  // O gateway resolve o roteamento por <service>; o front não conhece os MS direto.
   const proxy = env.API_PROXY_BASE
     ? (() => {
-        const base = new URL(env.API_PROXY_BASE).pathname.replace(/\/$/, '')
+        const gateway = new URL(env.API_PROXY_BASE)
+        const base = gateway.pathname.replace(/\/$/, '')
         return {
           '/api': {
-            target: new URL(env.API_PROXY_BASE).origin,
+            target: gateway.origin,
             changeOrigin: true,
-            rewrite: (path: string) => {
-              const match = path.match(/^\/api\/([^/]+)/)
-              if (!match) return path
-              return `${base}/${match[1]}${path}`
-            },
+            rewrite: (path: string) => `${base}${path}`,
           },
         }
       })()
@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
     resolve: { tsconfigPaths: true },
     plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
     server: {
-      port: 5173,
+      port: 9518,
       ...(proxy ? { proxy } : {}),
     },
   }
