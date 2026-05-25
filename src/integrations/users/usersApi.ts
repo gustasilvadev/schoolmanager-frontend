@@ -1,14 +1,14 @@
-import { createApi } from '@/lib/api'
+import { create } from '@/lib/api'
 import type { MeResponse } from '@/types/auth'
 
-const api = createApi('users')
+const api = create('users')
 
-export async function getMeApi(): Promise<MeResponse> {
+export async function getMe(): Promise<MeResponse> {
   const { data } = await api.get<MeResponse>('/me')
   return data
 }
 
-export async function changePasswordApi(
+export async function changePassword(
   oldPassword: string,
   newPassword: string,
 ): Promise<void> {

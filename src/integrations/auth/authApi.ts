@@ -1,7 +1,7 @@
-import { createApi } from '@/lib/api'
+import { create } from '@/lib/api'
 import type { LoginResponse } from '@/types/auth'
 
-const api = createApi('auth')
+const api = create('auth')
 
 export async function login(
   email: string,
