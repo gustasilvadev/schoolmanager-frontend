@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import type { MeResponse } from '@/types/auth'
 import { ACCENT, ROLE_LABEL } from './theme'
 import type { Accent } from './theme'
-import { StatusBadge } from './StatusBadge'
+import { StatusBadge } from '@/components/shared/StatusBadge'
 
 interface ProfileHeaderProps {
   data: MeResponse

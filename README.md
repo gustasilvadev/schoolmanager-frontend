@@ -18,21 +18,21 @@ Funcionalidades planejadas (em construção):
 
 ## Stack
 
-| Camada | Tecnologia |
-|--------|------------|
-| Build / Dev server | [Vite](https://vitejs.dev/) |
-| Framework | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
-| Meta-framework | [TanStack Start](https://tanstack.com/start) |
-| Roteamento | [TanStack Router](https://tanstack.com/router) (file-based) |
-| Data fetching / cache | [TanStack Query](https://tanstack.com/query) |
-| Estilização | [Tailwind CSS 4](https://tailwindcss.com/) + `class-variance-authority` (cva) + `cn` |
-| Componentes UI | Primitivos próprios sobre [Radix UI](https://www.radix-ui.com/) |
-| HTTP | [axios](https://axios-http.com/) (via factory `lib/api.ts`, com proxy para o gateway) |
-| Forms / validação | [react-hook-form](https://react-hook-form.com/) + [zod](https://zod.dev/) |
-| Tabelas / gráficos / planilhas | TanStack Table · [recharts](https://recharts.org/) · [xlsx](https://www.npmjs.com/package/xlsx) |
-| Ícones / toasts / datas | [lucide-react](https://lucide.dev/) · [sonner](https://sonner.emilkowal.ski/) · [date-fns](https://date-fns.org/) |
-| Lint / Format | ESLint + Prettier |
-| Testes | [Vitest](https://vitest.dev/) + Testing Library |
+| Camada                         | Tecnologia                                                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Build / Dev server             | [Vite](https://vitejs.dev/)                                                                                       |
+| Framework                      | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                                    |
+| Meta-framework                 | [TanStack Start](https://tanstack.com/start)                                                                      |
+| Roteamento                     | [TanStack Router](https://tanstack.com/router) (file-based)                                                       |
+| Data fetching / cache          | [TanStack Query](https://tanstack.com/query)                                                                      |
+| Estilização                    | [Tailwind CSS 4](https://tailwindcss.com/) + `class-variance-authority` (cva) + `cn`                              |
+| Componentes UI                 | Primitivos próprios sobre [Radix UI](https://www.radix-ui.com/)                                                   |
+| HTTP                           | [axios](https://axios-http.com/) (via factory `lib/api.ts`, com proxy para o gateway)                             |
+| Forms / validação              | [react-hook-form](https://react-hook-form.com/) + [zod](https://zod.dev/)                                         |
+| Tabelas / gráficos / planilhas | TanStack Table · [recharts](https://recharts.org/) · [xlsx](https://www.npmjs.com/package/xlsx)                   |
+| Ícones / toasts / datas        | [lucide-react](https://lucide.dev/) · [sonner](https://sonner.emilkowal.ski/) · [date-fns](https://date-fns.org/) |
+| Lint / Format                  | ESLint + Prettier                                                                                                 |
+| Testes                         | [Vitest](https://vitest.dev/) + Testing Library                                                                   |
 
 ## Como rodar
 
@@ -45,22 +45,22 @@ A aplicação sobe em [http://localhost:9518](http://localhost:9518).
 
 ### Scripts disponíveis
 
-| Comando | Descrição |
-|---------|-----------|
-| `npm run dev` | Sobe o dev server na porta 9518 (com proxy `/api` → API Gateway) |
-| `npm run build` | Build de produção (typecheck + SSR) |
-| `npm run preview` | Pré-visualiza o build de produção |
-| `npm test` | Roda os testes (Vitest) |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier `--write` + `eslint --fix` |
-| `npm run check` | Prettier `--check` (sem alterar arquivos) |
+| Comando           | Descrição                                                        |
+| ----------------- | ---------------------------------------------------------------- |
+| `npm run dev`     | Sobe o dev server na porta 9518 (com proxy `/api` → API Gateway) |
+| `npm run build`   | Build de produção (typecheck + SSR)                              |
+| `npm run preview` | Pré-visualiza o build de produção                                |
+| `npm test`        | Roda os testes (Vitest)                                          |
+| `npm run lint`    | ESLint                                                           |
+| `npm run format`  | Prettier `--write` + `eslint --fix`                              |
+| `npm run check`   | Prettier `--check` (sem alterar arquivos)                        |
 
 ### Variáveis de ambiente (`.env`)
 
-| Variável | Descrição |
-|----------|-----------|
-| `VITE_API_BASE` | Base usada pelo axios. Em dev: `/api` (capturada pelo proxy). Em produção: URL completa do gateway, ex.: `http://academico3.rj.senac.br/20261prj5/schoolmanagement/apigateway/api`. |
-| `API_PROXY_BASE` | Base do API Gateway (inclui `/apigateway`) usada **só** pelo proxy do Vite em dev. |
+| Variável         | Descrição                                                                                                                                                                           |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE`  | Base usada pelo axios. Em dev: `/api` (capturada pelo proxy). Em produção: URL completa do gateway, ex.: `http://academico3.rj.senac.br/20261prj5/schoolmanagement/apigateway/api`. |
+| `API_PROXY_BASE` | Base do API Gateway (inclui `/apigateway`) usada **só** pelo proxy do Vite em dev.                                                                                                  |
 
 ## Estrutura de pastas
 

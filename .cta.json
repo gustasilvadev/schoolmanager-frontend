@@ -13,8 +13,8 @@
   "version": 1,
   "framework": "react",
   "chosenAddOns": [
-    "eslint",
-    "shadcn",
+    "eslint", 
+    "shadcn", 
     "tanstack-query"
   ]
 }
