@@ -1,5 +1,10 @@
 import { create } from '@/lib/api'
-import type { ListTeachersParams, ListTeachersResponse } from '@/types/teacher'
+import type {
+  Teacher,
+  ListTeachersParams,
+  ListTeachersResponse,
+  UpdateTeacher,
+} from '@/types/teacher'
 
 const api = create('teachers')
 
@@ -9,5 +14,38 @@ export async function listTeachers(
   const { data } = await api.get<ListTeachersResponse>('/listTeachers', {
     params,
   })
+  return data
+}
+
+export async function getTeacherById(id: number): Promise<Teacher> {
+  const { data } = await api.get<Teacher>(`/getTeacherById/${id}`)
+  return data
+}
+
+export async function getTeacherByCpf(cpf: string): Promise<Teacher | null> {
+  try {
+    const { data } = await api.get<Teacher>(`/byCpf/${cpf}`)
+    return data
+  } catch {
+    return null
+  }
+}
+
+export async function getTeacherByEmail(
+  email: string,
+): Promise<Teacher | null> {
+  try {
+    const { data } = await api.get<Teacher>(`/byEmail/${email}`)
+    return data
+  } catch {
+    return null
+  }
+}
+
+export async function updateTeacherById(
+  id: number,
+  payload: UpdateTeacher,
+): Promise<Teacher> {
+  const { data } = await api.put<Teacher>(`/updateTeacherById/${id}`, payload)
   return data
 }
