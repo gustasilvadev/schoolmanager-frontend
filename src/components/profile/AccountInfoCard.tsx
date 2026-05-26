@@ -4,7 +4,7 @@ import { ROLE_LABEL } from './theme'
 import type { Accent } from './theme'
 import { ProfileCard } from './ProfileCard'
 import { InfoRow } from './InfoRow'
-import { StatusBadge } from './StatusBadge'
+import { StatusBadge } from '@/components/shared/StatusBadge'
 
 interface AccountInfoCardProps {
   data: MeResponse

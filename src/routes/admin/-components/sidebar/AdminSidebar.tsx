@@ -47,7 +47,9 @@ export function AdminSidebar() {
                 to={item.to}
                 activeProps={{ className: 'bg-blue-600 text-white' }}
                 inactiveProps={{ className: 'text-white hover:bg-white/10' }}
-                className={cn('flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150')}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
+                )}
               >
                 <item.icon className="h-4 w-4 shrink-0 text-white" />
                 {item.label}

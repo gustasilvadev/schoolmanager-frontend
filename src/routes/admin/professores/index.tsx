@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, GraduationCap, Search } from 'lucide-react'
 import { toast } from 'sonner'
@@ -51,9 +51,12 @@ function ProfessoresPage() {
     toast.info(`Restaurar: ${teacher.teacher_name}`)
   }
 
-  if (isError) {
-    toast.error('Erro ao carregar professores')
-  }
+  useEffect(() => {
+    if (isError) {
+      console.error('[useTeachers] erro ao carregar professores')
+      toast.error('Erro ao carregar professores')
+    }
+  }, [isError])
 
   return (
     <div className="space-y-6">

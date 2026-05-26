@@ -4,10 +4,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { StatusBadge } from '@/components/profile/StatusBadge'
+import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Teacher } from '@/types/teacher'
+import { TeacherTableEmpty } from './TeacherTableEmpty'
 
 interface TeacherTableProps {
   teachers: Teacher[]
@@ -41,9 +42,7 @@ export function TeacherTable({
     }),
     columnHelper.accessor('teacher_email', {
       header: 'E-mail',
-      cell: (info) => (
-        <span className="text-slate-300">{info.getValue()}</span>
-      ),
+      cell: (info) => <span className="text-slate-300">{info.getValue()}</span>,
     }),
     columnHelper.accessor('teacher_status', {
       header: 'Status',
@@ -103,20 +102,8 @@ export function TeacherTable({
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (isLoading) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-xl border border-slate-800 bg-slate-900">
-        <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
-      </div>
-    )
-  }
-
-  if (teachers.length === 0) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-xl border border-slate-800 bg-slate-900">
-        <p className="text-sm text-slate-500">Nenhum professor encontrado.</p>
-      </div>
-    )
+  if (isLoading || teachers.length === 0) {
+    return <TeacherTableEmpty isLoading={isLoading} />
   }
 
   return (

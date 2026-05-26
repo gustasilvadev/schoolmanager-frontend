@@ -6,5 +6,6 @@ export function useTeachers(params?: ListTeachersParams) {
   return useQuery({
     queryKey: ['teachers', params],
     queryFn: () => listTeachers(params),
+    staleTime: 5 * 60 * 1000,
   })
 }
