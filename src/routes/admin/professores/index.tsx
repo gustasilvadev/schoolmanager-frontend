@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useTeachers } from '@/hooks/useTeachers'
 import { Button } from '@/components/ui/Button'
 import { TeacherTable } from './-components/TeacherTable'
+import { TeacherDisciplinesModal } from '@/components/classes/TeacherDisciplinesModal'
 import type { Teacher } from '@/types/teacher'
 
 export const Route = createFileRoute('/admin/professores/')({
@@ -17,6 +18,9 @@ function ProfessoresPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [includeDeleted, setIncludeDeleted] = useState(false)
+  const [disciplinesTeacher, setDisciplinesTeacher] = useState<Teacher | null>(
+    null,
+  )
 
   const { data, isLoading, isError } = useTeachers({
     page,
@@ -49,6 +53,10 @@ function ProfessoresPage() {
 
   function handleRestore(teacher: Teacher) {
     toast.info(`Restaurar: ${teacher.teacher_name}`)
+  }
+
+  function handleDisciplines(teacher: Teacher) {
+    setDisciplinesTeacher(teacher)
   }
 
   useEffect(() => {
@@ -107,6 +115,7 @@ function ProfessoresPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onRestore={handleRestore}
+        onDisciplines={handleDisciplines}
       />
 
       {totalPages > 1 && (
@@ -136,6 +145,11 @@ function ProfessoresPage() {
           </div>
         </div>
       )}
+
+      <TeacherDisciplinesModal
+        teacher={disciplinesTeacher}
+        onClose={() => setDisciplinesTeacher(null)}
+      />
     </div>
   )
 }

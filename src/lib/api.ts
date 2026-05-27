@@ -1,17 +1,14 @@
 import axios from 'axios'
-import { clearSession, getStoredSession } from '@/context/AuthContext'
+import { clearSession } from '@/context/AuthContext'
 
 export function create(service: string) {
   const instance = axios.create({
     baseURL: `${import.meta.env.VITE_API_BASE}/${service}`,
     headers: { 'Content-Type': 'application/json' },
+    withCredentials: true,
   })
 
   instance.interceptors.request.use((config) => {
-    const session = getStoredSession()
-    if (session?.token) {
-      config.headers.Authorization = `Bearer ${session.token}`
-    }
     console.log(
       '[API] →',
       config.method?.toUpperCase(),
