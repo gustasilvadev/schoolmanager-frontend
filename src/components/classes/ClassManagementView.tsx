@@ -48,10 +48,7 @@ export function ClassManagementView({
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
   useEffect(() => {
-    if (isError) {
-      console.error('[ClassManagementView] erro ao carregar turmas')
-      toast.error('Erro ao carregar turmas')
-    }
+    if (isError) toast.error('Erro ao carregar turmas')
   }, [isError])
 
   function handleSearch(value: string) {

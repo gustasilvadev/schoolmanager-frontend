@@ -40,27 +40,6 @@ export function useClassStudents(classId: number) {
   })
 }
 
-export function useEnrollStudent() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({
-      classId,
-      studentId,
-    }: {
-      classId: number
-      studentId: number
-    }) => enrollStudent(classId, studentId),
-    onSuccess: (_, { classId }) => {
-      void qc.invalidateQueries({ queryKey: ['class-students', classId] })
-      toast.success('Aluno matriculado com sucesso')
-    },
-    onError: (e: Error) => {
-      console.error('[useEnrollStudent]', e.message)
-      toast.error(e.message || 'Erro ao matricular aluno')
-    },
-  })
-}
-
 export function useUnenrollStudent() {
   const qc = useQueryClient()
   return useMutation({

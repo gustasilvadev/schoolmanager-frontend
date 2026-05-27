@@ -1,8 +1,6 @@
 import {
   BookOpen,
-  GraduationCap,
   ChevronRight,
-  Users,
   ClipboardList,
 } from 'lucide-react'
 
@@ -129,17 +127,6 @@ export function ClassesLanding({ onNavigate }: ClassesLandingProps) {
             </button>
           )
         })}
-      </div>
-
-      <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
-        <div className="flex items-center gap-2 text-slate-400">
-          <Users className="h-4 w-4" />
-          <GraduationCap className="h-4 w-4" />
-          <p className="text-xs">
-            As turmas integram alunos (MS2), professores (MS3), disciplinas e
-            avaliações (MS5) do SchoolManager.
-          </p>
-        </div>
       </div>
     </div>
   )

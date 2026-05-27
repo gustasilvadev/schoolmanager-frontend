@@ -39,27 +39,6 @@ export function useClassDisciplines(classId: number) {
   })
 }
 
-export function useAddDisciplineToClass() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({
-      classId,
-      disciplineId,
-    }: {
-      classId: number
-      disciplineId: number
-    }) => addDisciplineToClass(classId, disciplineId),
-    onSuccess: (_, { classId }) => {
-      void qc.invalidateQueries({ queryKey: ['class-disciplines', classId] })
-      toast.success('Disciplina adicionada à turma')
-    },
-    onError: (e: Error) => {
-      console.error('[useAddDisciplineToClass]', e.message)
-      toast.error(e.message || 'Erro ao adicionar disciplina')
-    },
-  })
-}
-
 export function useRemoveDisciplineFromClass() {
   const qc = useQueryClient()
   return useMutation({

@@ -54,7 +54,7 @@ export function DisciplineFormModal({
               discipline_name: editing.discipline_name,
               discipline_hour: editing.discipline_hour,
             }
-          : { discipline_name: '', discipline_hour: undefined },
+          : { discipline_name: '', discipline_hour: '' as unknown as number },
       )
     }
   }, [open, editing, reset])

@@ -40,27 +40,6 @@ export function useClassTeachers(classId: number) {
   })
 }
 
-export function useAssignTeacher() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({
-      classId,
-      teacherId,
-    }: {
-      classId: number
-      teacherId: number
-    }) => assignTeacher(classId, teacherId),
-    onSuccess: (_, { classId }) => {
-      void qc.invalidateQueries({ queryKey: ['class-teachers', classId] })
-      toast.success('Professor associado com sucesso')
-    },
-    onError: (e: Error) => {
-      console.error('[useAssignTeacher]', e.message)
-      toast.error(e.message || 'Erro ao associar professor')
-    },
-  })
-}
-
 export function useUnassignTeacher() {
   const qc = useQueryClient()
   return useMutation({

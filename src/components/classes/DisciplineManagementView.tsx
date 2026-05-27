@@ -48,10 +48,7 @@ export function DisciplineManagementView({
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
   useEffect(() => {
-    if (isError) {
-      console.error('[DisciplineManagementView] erro ao carregar disciplinas')
-      toast.error('Erro ao carregar disciplinas')
-    }
+    if (isError) toast.error('Erro ao carregar disciplinas')
   }, [isError])
 
   function handleSearch(value: string) {
