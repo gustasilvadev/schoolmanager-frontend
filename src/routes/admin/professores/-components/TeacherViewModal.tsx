@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Dialog } from '@/components/ui/Dialog'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Teacher } from '@/types/teacher'
@@ -8,7 +9,7 @@ interface TeacherViewModalProps {
   onClose: () => void
 }
 
-function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+function InfoRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="text-xs font-medium uppercase tracking-wide text-slate-500">

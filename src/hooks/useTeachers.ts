@@ -28,8 +28,12 @@ export function useUpdateTeacher() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: UpdateTeacher }) =>
       updateTeacherById(id, payload),
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['teachers'] })
+      queryClient.invalidateQueries({ queryKey: ['teacher', id] })
+    },
+    onError: (error) => {
+      console.error('[useUpdateTeacher]', error)
     },
   })
 }
