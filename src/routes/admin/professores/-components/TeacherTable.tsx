@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Eye, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { BookOpen, Eye, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Teacher } from '@/types/teacher'

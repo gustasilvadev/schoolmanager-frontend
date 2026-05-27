@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { TeacherTable } from './-components/TeacherTable'
 import { TeacherViewModal } from './-components/TeacherViewModal'
 import { TeacherEditModal } from './-components/TeacherEditModal'
+import { TeacherDisciplinesModal } from '@/components/classes/TeacherDisciplinesModal'
 import type { Teacher } from '@/types/teacher'
 
 export const Route = createFileRoute('/admin/professores/')({
@@ -21,6 +22,7 @@ function ProfessoresPage() {
   const [includeDeleted, setIncludeDeleted] = useState(false)
   const [viewingTeacher, setViewingTeacher] = useState<Teacher | null>(null)
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
+  const [disciplinesTeacher, setDisciplinesTeacher] = useState<Teacher | null>(null)
 
   const { data, isLoading, isError } = useTeachers({
     page,

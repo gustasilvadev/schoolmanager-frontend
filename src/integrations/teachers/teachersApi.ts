@@ -1,6 +1,7 @@
 import { create } from '@/lib/api'
 import type {
   Teacher,
+  TeacherDisciplinesResponse,
   ListTeachersParams,
   ListTeachersResponse,
   UpdateTeacher,
@@ -48,4 +49,27 @@ export async function updateTeacherById(
 ): Promise<Teacher> {
   const { data } = await api.put<Teacher>(`/updateTeacherById/${id}`, payload)
   return data
+}
+
+export async function getTeacherDisciplines(
+  teacherId: number,
+): Promise<TeacherDisciplinesResponse> {
+  const { data } = await api.get<TeacherDisciplinesResponse>(
+    `/disciplines/${teacherId}`,
+  )
+  return data
+}
+
+export async function associateDiscipline(
+  teacherId: number,
+  disciplineId: number,
+): Promise<void> {
+  await api.post(`/linkDiscipline/${teacherId}`, { discipline_id: disciplineId })
+}
+
+export async function removeDisciplineAssociation(
+  teacherId: number,
+  disciplineId: number,
+): Promise<void> {
+  await api.delete(`/unlinkDiscipline/${teacherId}/${disciplineId}`)
 }

@@ -17,12 +17,13 @@ const schema = z.object({
     .min(1, 'Nome obrigatório')
     .max(45, 'Máximo 45 caracteres'),
   discipline_hour: z.coerce
-    .number({ invalid_type_error: 'Informe um número' })
+    .number({ error: 'Informe um número' })
     .int('Deve ser inteiro')
     .positive('Deve ser maior que zero'),
 })
 
-type FormValues = z.infer<typeof schema>
+type FormInput = z.input<typeof schema>
+type FormValues = z.output<typeof schema>
 
 interface DisciplineFormModalProps {
   open: boolean
@@ -44,7 +45,7 @@ export function DisciplineFormModal({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+  } = useForm<FormInput, unknown, FormValues>({ resolver: zodResolver(schema) })
 
   useEffect(() => {
     if (open) {
