@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { toast } from 'sonner'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -24,7 +25,7 @@ interface TeacherEditModalProps {
 }
 
 export function TeacherEditModal({ teacher, open, onClose }: TeacherEditModalProps) {
-  const { mutate: updateTeacher, isPending } = useUpdateTeacher()
+  const { mutateAsync: updateTeacher, isPending } = useUpdateTeacher()
 
   const {
     register,
@@ -70,10 +71,14 @@ export function TeacherEditModal({ teacher, open, onClose }: TeacherEditModalPro
 
     if (hasConflict) return
 
-    updateTeacher(
-      { id: teacher.teacher_id, payload: values },
-      { onSuccess: onClose },
-    )
+    try {
+      await updateTeacher({ id: teacher.teacher_id, payload: values })
+      toast.success('Professor atualizado com sucesso')
+      onClose()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao atualizar professor'
+      toast.error(message)
+    }
   }
 
   return (

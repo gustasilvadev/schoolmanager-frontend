@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 import {
   listTeachers,
   getTeacherById,
@@ -31,10 +30,6 @@ export function useUpdateTeacher() {
       updateTeacherById(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teachers'] })
-      toast.success('Professor atualizado com sucesso')
-    },
-    onError: () => {
-      toast.error('Erro ao atualizar professor')
     },
   })
 }
