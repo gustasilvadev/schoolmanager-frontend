@@ -4,101 +4,69 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Eye, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import type { Teacher } from '@/types/teacher'
-import { TeacherTableEmpty } from './TeacherTableEmpty'
+import type { Discipline } from '@/types/classes'
 
-interface TeacherTableProps {
-  teachers: Teacher[]
+interface DisciplineTableProps {
+  disciplines: Discipline[]
   isLoading: boolean
-  onView: (teacher: Teacher) => void
-  onEdit: (teacher: Teacher) => void
-  onDelete: (teacher: Teacher) => void
-  onRestore: (teacher: Teacher) => void
-  onDisciplines: (teacher: Teacher) => void
+  onEdit: (d: Discipline) => void
+  onDelete: (d: Discipline) => void
+  onRestore: (d: Discipline) => void
 }
 
-const columnHelper = createColumnHelper<Teacher>()
+const col = createColumnHelper<Discipline>()
 
-export function TeacherTable({
-  teachers,
+export function DisciplineTable({
+  disciplines,
   isLoading,
-  onView,
   onEdit,
   onDelete,
   onRestore,
-  onDisciplines,
-}: TeacherTableProps) {
+}: DisciplineTableProps) {
   const columns = [
-    columnHelper.accessor('teacher_name', {
+    col.accessor('discipline_name', {
       header: 'Nome',
       cell: (info) => (
         <span className="font-medium text-white">{info.getValue()}</span>
       ),
     }),
-    columnHelper.accessor('teacher_cpf', {
-      header: 'CPF',
+    col.accessor('discipline_hour', {
+      header: 'Carga Horária',
       cell: (info) => (
-        <span className="font-mono text-slate-300">{info.getValue()}</span>
+        <span className="text-slate-300">{info.getValue()}h</span>
       ),
     }),
-    columnHelper.accessor('teacher_email', {
-      header: 'E-mail',
-      cell: (info) => <span className="text-slate-300">{info.getValue()}</span>,
-    }),
-    columnHelper.accessor('teacher_status', {
+    col.accessor('discipline_status', {
       header: 'Status',
       cell: (info) => <StatusBadge status={info.getValue()} />,
     }),
-    columnHelper.display({
+    col.display({
       id: 'actions',
       header: 'Ações',
       cell: ({ row }) => {
-        const teacher = row.original
-        const isDeleted = teacher.teacher_status === 2
-
+        const d = row.original
+        const isDeleted = d.discipline_status === 2
         return (
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onView(teacher)}
-              title="Visualizar"
-              className="h-8 w-8 p-0"
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </Button>
-
             {!isDeleted && (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDisciplines(teacher)}
-                title="Gerenciar habilitações"
-                className="h-8 w-8 p-0 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
-              >
-                <BookOpen className="h-3.5 w-3.5" />
-              </Button>
-            )}
-            {!isDeleted && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(teacher)}
+                onClick={() => onEdit(d)}
                 title="Editar"
                 className="h-8 w-8 p-0"
               >
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
             )}
-
             {isDeleted ? (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onRestore(teacher)}
+                onClick={() => onRestore(d)}
                 title="Restaurar"
                 className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
               >
@@ -108,7 +76,7 @@ export function TeacherTable({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDelete(teacher)}
+                onClick={() => onDelete(d)}
                 title="Excluir"
                 className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-300"
               >
@@ -122,30 +90,39 @@ export function TeacherTable({
   ]
 
   const table = useReactTable({
-    data: teachers,
+    data: disciplines,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (isLoading || teachers.length === 0) {
-    return <TeacherTableEmpty isLoading={isLoading} />
+  if (isLoading) {
+    return (
+      <div className="flex h-40 items-center justify-center rounded-xl border border-slate-800">
+        <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
+      </div>
+    )
+  }
+
+  if (disciplines.length === 0) {
+    return (
+      <div className="flex h-40 items-center justify-center rounded-xl border border-slate-800">
+        <p className="text-sm text-slate-500">Nenhuma disciplina encontrada.</p>
+      </div>
+    )
   }
 
   return (
     <div className="overflow-hidden rounded-xl border border-slate-800">
       <table className="w-full text-sm">
         <thead className="bg-slate-900">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
+          {table.getHeaderGroups().map((hg) => (
+            <tr key={hg.id}>
+              {hg.headers.map((h) => (
                 <th
-                  key={header.id}
+                  key={h.id}
                   className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-400"
                 >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
+                  {flexRender(h.column.columnDef.header, h.getContext())}
                 </th>
               ))}
             </tr>

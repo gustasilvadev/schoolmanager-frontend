@@ -7,6 +7,10 @@ export interface Teacher {
   user_id: number
 }
 
+export interface TeacherDisciplinesResponse {
+  discipline_ids: number[]
+}
+
 export interface ListTeachersParams {
   page?: number
   limit?: number

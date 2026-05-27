@@ -15,7 +15,6 @@ export function useLogin() {
 
     onSuccess: (data) => {
       setAuth({
-        token: data.token,
         role: data.user.role,
         userId: data.user.user_id,
         userEmail: data.user.user_email,

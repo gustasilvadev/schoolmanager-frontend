@@ -59,6 +59,10 @@ function ProfessoresPage() {
     toast.info(`Restaurar: ${teacher.teacher_name}`)
   }
 
+  function handleDisciplines(teacher: Teacher) {
+    setDisciplinesTeacher(teacher)
+  }
+
   useEffect(() => {
     if (isError) {
       console.error('[useTeachers] erro ao carregar professores')
@@ -117,6 +121,7 @@ function ProfessoresPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onRestore={handleRestore}
+        onDisciplines={handleDisciplines}
       />
 
       {totalPages > 1 && (
@@ -146,6 +151,11 @@ function ProfessoresPage() {
           </div>
         </div>
       )}
+
+      <TeacherDisciplinesModal
+        teacher={disciplinesTeacher}
+        onClose={() => setDisciplinesTeacher(null)}
+      />
     </div>
 
     <TeacherViewModal

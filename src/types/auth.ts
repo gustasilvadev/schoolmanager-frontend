@@ -1,5 +1,4 @@
 export interface AuthSession {
-  token: string
   role: 'ADMIN' | 'TEACHER'
   userId: number
   userEmail: string
@@ -25,7 +24,6 @@ export interface LoginUserData {
 }
 
 export interface LoginResponse {
-  token: string
   user: LoginUserData
 }
 
