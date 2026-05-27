@@ -27,3 +27,9 @@ export interface ListTeachersResponse {
   page: number
   limit: number
 }
+
+export interface UpdateTeacher {
+  teacher_name?: string
+  teacher_cpf?: string
+  teacher_email?: string
+}

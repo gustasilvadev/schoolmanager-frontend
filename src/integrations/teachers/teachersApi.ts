@@ -1,8 +1,9 @@
 import { create } from '@/lib/api'
 import type {
+  Teacher,
   ListTeachersParams,
   ListTeachersResponse,
-  TeacherDisciplinesResponse,
+  UpdateTeacher,
 } from '@/types/teacher'
 
 const api = create('teachers')
@@ -16,25 +17,35 @@ export async function listTeachers(
   return data
 }
 
-export async function getTeacherDisciplines(
-  teacherId: number,
-): Promise<TeacherDisciplinesResponse> {
-  const { data } = await api.get<TeacherDisciplinesResponse>(
-    `/disciplines/${teacherId}`,
-  )
+export async function getTeacherById(id: number): Promise<Teacher> {
+  const { data } = await api.get<Teacher>(`/getTeacherById/${id}`)
   return data
 }
 
-export async function associateDiscipline(
-  teacherId: number,
-  disciplineId: number,
-): Promise<void> {
-  await api.post(`/linkDiscipline/${teacherId}`, { discipline_id: disciplineId })
+export async function getTeacherByCpf(cpf: string): Promise<Teacher | null> {
+  try {
+    const { data } = await api.get<Teacher>(`/byCpf/${cpf}`)
+    return data
+  } catch {
+    return null
+  }
 }
 
-export async function removeDisciplineAssociation(
-  teacherId: number,
-  disciplineId: number,
-): Promise<void> {
-  await api.delete(`/unlinkDiscipline/${teacherId}/${disciplineId}`)
+export async function getTeacherByEmail(
+  email: string,
+): Promise<Teacher | null> {
+  try {
+    const { data } = await api.get<Teacher>(`/byEmail/${email}`)
+    return data
+  } catch {
+    return null
+  }
+}
+
+export async function updateTeacherById(
+  id: number,
+  payload: UpdateTeacher,
+): Promise<Teacher> {
+  const { data } = await api.put<Teacher>(`/updateTeacherById/${id}`, payload)
+  return data
 }

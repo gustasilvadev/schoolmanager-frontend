@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { BookOpen, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Eye, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Teacher } from '@/types/teacher'
@@ -13,6 +13,7 @@ import { TeacherTableEmpty } from './TeacherTableEmpty'
 interface TeacherTableProps {
   teachers: Teacher[]
   isLoading: boolean
+  onView: (teacher: Teacher) => void
   onEdit: (teacher: Teacher) => void
   onDelete: (teacher: Teacher) => void
   onRestore: (teacher: Teacher) => void
@@ -24,6 +25,7 @@ const columnHelper = createColumnHelper<Teacher>()
 export function TeacherTable({
   teachers,
   isLoading,
+  onView,
   onEdit,
   onDelete,
   onRestore,
@@ -59,6 +61,16 @@ export function TeacherTable({
 
         return (
           <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onView(teacher)}
+              title="Visualizar"
+              className="h-8 w-8 p-0"
+            >
+              <Eye className="h-3.5 w-3.5" />
+            </Button>
+
             {!isDeleted && (
               <Button
                 variant="ghost"

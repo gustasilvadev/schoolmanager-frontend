@@ -5,7 +5,8 @@ import { toast } from 'sonner'
 import { useTeachers } from '@/hooks/useTeachers'
 import { Button } from '@/components/ui/Button'
 import { TeacherTable } from './-components/TeacherTable'
-import { TeacherDisciplinesModal } from '@/components/classes/TeacherDisciplinesModal'
+import { TeacherViewModal } from './-components/TeacherViewModal'
+import { TeacherEditModal } from './-components/TeacherEditModal'
 import type { Teacher } from '@/types/teacher'
 
 export const Route = createFileRoute('/admin/professores/')({
@@ -18,9 +19,8 @@ function ProfessoresPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [includeDeleted, setIncludeDeleted] = useState(false)
-  const [disciplinesTeacher, setDisciplinesTeacher] = useState<Teacher | null>(
-    null,
-  )
+  const [viewingTeacher, setViewingTeacher] = useState<Teacher | null>(null)
+  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
 
   const { data, isLoading, isError } = useTeachers({
     page,
@@ -43,8 +43,12 @@ function ProfessoresPage() {
     setPage(1)
   }
 
+  function handleView(teacher: Teacher) {
+    setViewingTeacher(teacher)
+  }
+
   function handleEdit(teacher: Teacher) {
-    toast.info(`Editar: ${teacher.teacher_name}`)
+    setEditingTeacher(teacher)
   }
 
   function handleDelete(teacher: Teacher) {
@@ -67,6 +71,7 @@ function ProfessoresPage() {
   }, [isError])
 
   return (
+    <>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -112,6 +117,7 @@ function ProfessoresPage() {
       <TeacherTable
         teachers={teachers}
         isLoading={isLoading}
+        onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onRestore={handleRestore}
@@ -151,5 +157,18 @@ function ProfessoresPage() {
         onClose={() => setDisciplinesTeacher(null)}
       />
     </div>
+
+    <TeacherViewModal
+      teacher={viewingTeacher}
+      open={viewingTeacher !== null}
+      onClose={() => setViewingTeacher(null)}
+    />
+
+    <TeacherEditModal
+      teacher={editingTeacher}
+      open={editingTeacher !== null}
+      onClose={() => setEditingTeacher(null)}
+    />
+    </>
   )
 }
