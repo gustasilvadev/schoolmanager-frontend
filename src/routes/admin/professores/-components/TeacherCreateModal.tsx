@@ -61,8 +61,10 @@ export function TeacherCreateModal({ open, onClose }: TeacherCreateModalProps) {
       toast.success('Professor criado com sucesso!')
       reset()
       onClose()
-    } catch {
-      toast.error('Erro ao criar professor')
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Erro ao criar professor'
+      toast.error(message)
     }
   }
 
