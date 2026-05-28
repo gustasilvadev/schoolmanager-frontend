@@ -4,7 +4,9 @@ import {
   getTeacherById,
   updateTeacherById,
 } from '@/integrations/teachers/teachersApi'
+import { createUser } from '@/integrations/users/usersApi'
 import type { ListTeachersParams, UpdateTeacher } from '@/types/teacher'
+import type { CreateUserTeacherPayload } from '@/types/user'
 
 export function useTeachers(
   params?: ListTeachersParams,
@@ -38,6 +40,19 @@ export function useUpdateTeacher() {
     },
     onError: (error) => {
       console.error('[useUpdateTeacher]', error)
+    },
+  })
+}
+
+export function useCreateTeacher() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: CreateUserTeacherPayload) => createUser(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teachers'] })
+    },
+    onError: (error) => {
+      console.error('[useCreateTeacher]', error)
     },
   })
 }
