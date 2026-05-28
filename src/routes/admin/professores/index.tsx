@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight, GraduationCap, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, GraduationCap, Search, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTeachers } from '@/hooks/useTeachers'
 import { Button } from '@/components/ui/Button'
 import { TeacherTable } from './-components/TeacherTable'
 import { TeacherViewModal } from './-components/TeacherViewModal'
 import { TeacherEditModal } from './-components/TeacherEditModal'
+import { TeacherCreateModal } from './-components/TeacherCreateModal'
 import { TeacherDisciplinesModal } from '@/components/classes/TeacherDisciplinesModal'
 import type { Teacher } from '@/types/teacher'
 
@@ -20,6 +21,7 @@ function ProfessoresPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [includeDeleted, setIncludeDeleted] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
   const [viewingTeacher, setViewingTeacher] = useState<Teacher | null>(null)
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
   const [disciplinesTeacher, setDisciplinesTeacher] = useState<Teacher | null>(null)
@@ -90,8 +92,14 @@ function ProfessoresPage() {
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-400">
-          <span>Incluir excluídos</span>
+        <div className="flex items-center gap-3">
+          <Button onClick={() => setIsCreating(true)}>
+            <UserPlus className="h-4 w-4" />
+            Novo Professor
+          </Button>
+
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-400">
+            <span>Incluir excluídos</span>
           <div className="relative">
             <input
               type="checkbox"
@@ -102,7 +110,8 @@ function ProfessoresPage() {
             <div className="h-5 w-9 rounded-full bg-slate-700 transition-colors peer-checked:bg-blue-600" />
             <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
           </div>
-        </label>
+          </label>
+        </div>
       </div>
 
       <div className="relative">
@@ -170,6 +179,11 @@ function ProfessoresPage() {
       teacher={editingTeacher}
       open={editingTeacher !== null}
       onClose={() => setEditingTeacher(null)}
+    />
+
+    <TeacherCreateModal
+      open={isCreating}
+      onClose={() => setIsCreating(false)}
     />
     </>
   )
