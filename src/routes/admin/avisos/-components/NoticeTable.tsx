@@ -13,6 +13,9 @@ import type { NoticeItem, NoticePriority } from '@/types/notice'
 interface NoticeTableProps {
   notices: NoticeItem[]
   isLoading: boolean
+  canEdit: boolean
+  onDelete: (notice: NoticeItem) => void
+  onRestore: (notice: NoticeItem) => void
 }
 
 const columnHelper = createColumnHelper<NoticeItem>()
@@ -58,7 +61,10 @@ function getReadersLabel(notice: NoticeItem) {
 
   if (visibilities.length === 0) return '—'
 
-  const read = visibilities.filter((visibility) => Boolean(visibility.notice_visibility_viewed_in),).length
+  const read = visibilities.filter((visibility) =>
+    Boolean(visibility.notice_visibility_viewed_in),
+  ).length
+
   return `${read}/${visibilities.length}`
 }
 
@@ -77,7 +83,13 @@ function PriorityBadge({ priority }: { priority: NoticePriority }) {
   )
 }
 
-export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
+export function NoticeTable({
+  notices,
+  isLoading,
+  canEdit,
+  onDelete,
+  onRestore,
+}: NoticeTableProps) {
   const columns = [
     columnHelper.accessor('notice_title', {
       header: 'Título',
@@ -85,12 +97,14 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
         <span className="font-medium text-white">{info.getValue()}</span>
       ),
     }),
+
     columnHelper.accessor('notice_date', {
       header: 'Data',
       cell: (info) => (
         <span className="text-slate-300">{formatDate(info.getValue())}</span>
       ),
     }),
+
     columnHelper.display({
       id: 'visibility',
       header: 'Visibilidade',
@@ -100,10 +114,12 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
         </span>
       ),
     }),
+
     columnHelper.accessor('notice_priority', {
       header: 'Prioridade',
       cell: (info) => <PriorityBadge priority={info.getValue()} />,
     }),
+
     columnHelper.display({
       id: 'viewed',
       header: 'Leitores',
@@ -111,10 +127,12 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
         <span className="text-slate-300">{getReadersLabel(row.original)}</span>
       ),
     }),
+
     columnHelper.accessor('notice_status', {
       header: 'Status',
       cell: (info) => <StatusBadge status={info.getValue()} />,
     }),
+
     columnHelper.display({
       id: 'actions',
       header: 'Ações',
@@ -124,7 +142,7 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
 
         return (
           <div className="flex items-center gap-1">
-            {!isDeleted && (
+            {canEdit && !isDeleted && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -136,27 +154,27 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
               </Button>
             )}
 
-            {isDeleted ? (
+            {canEdit && isDeleted ? (
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => onRestore(notice)}
                 title="Restaurar"
                 className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
-                disabled
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </Button>
-            ) : (
+            ) : canEdit ? (
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => onDelete(notice)}
                 title="Excluir"
                 className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-300"
-                disabled
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
-            )}
+            ) : null}
           </div>
         )
       },
@@ -205,6 +223,7 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
             </tr>
           ))}
         </thead>
+
         <tbody className="divide-y divide-slate-800 bg-slate-900/50">
           {table.getRowModel().rows.map((row) => (
             <tr
