@@ -15,9 +15,12 @@ interface NoticeTableProps {
   isLoading: boolean
 }
 
-const col = createColumnHelper<NoticeItem>()
+const columnHelper = createColumnHelper<NoticeItem>()
 
-const PRIORITY_MAP: Record<NoticePriority, { label: string; className: string }> = {
+const PRIORITY_MAP: Record<
+  NoticePriority,
+  { label: string; className: string }
+> = {
   1: {
     label: 'Baixa',
     className: 'bg-slate-500/10 text-slate-400 border border-slate-500/20',
@@ -44,20 +47,19 @@ function formatDate(value: string | null) {
   })
 }
 
-function getAuthor(notice: NoticeItem) {
-  return notice.author_name ?? notice.created_by ?? notice.admin_id ?? '—'
-}
-
 function getVisibilityLabel(notice: NoticeItem) {
   const visibilities = notice.notice_visibilities ?? []
 
   return visibilities.length > 0 ? 'Restrita' : 'Pública'
 }
 
-function getViewedCount(notice: NoticeItem) {
-  return (notice.notice_visibilities ?? []).filter(
-    (visibility) => Boolean(visibility.notice_visibility_viewed_in),
-  ).length
+function getReadersLabel(notice: NoticeItem) {
+  const visibilities = notice.notice_visibilities ?? []
+
+  if (visibilities.length === 0) return '—'
+
+  const read = visibilities.filter((visibility) => Boolean(visibility.notice_visibility_viewed_in),).length
+  return `${read}/${visibilities.length}`
 }
 
 function PriorityBadge({ priority }: { priority: NoticePriority }) {
@@ -77,26 +79,19 @@ function PriorityBadge({ priority }: { priority: NoticePriority }) {
 
 export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
   const columns = [
-    col.accessor('notice_title', {
+    columnHelper.accessor('notice_title', {
       header: 'Título',
       cell: (info) => (
         <span className="font-medium text-white">{info.getValue()}</span>
       ),
     }),
-    col.accessor('notice_date', {
+    columnHelper.accessor('notice_date', {
       header: 'Data',
       cell: (info) => (
         <span className="text-slate-300">{formatDate(info.getValue())}</span>
       ),
     }),
-    col.display({
-      id: 'author',
-      header: 'Autor',
-      cell: ({ row }) => (
-        <span className="text-slate-300">{getAuthor(row.original)}</span>
-      ),
-    }),
-    col.display({
+    columnHelper.display({
       id: 'visibility',
       header: 'Visibilidade',
       cell: ({ row }) => (
@@ -105,22 +100,22 @@ export function NoticeTable({ notices, isLoading }: NoticeTableProps) {
         </span>
       ),
     }),
-    col.accessor('notice_priority', {
+    columnHelper.accessor('notice_priority', {
       header: 'Prioridade',
       cell: (info) => <PriorityBadge priority={info.getValue()} />,
     }),
-    col.display({
+    columnHelper.display({
       id: 'viewed',
       header: 'Leitores',
       cell: ({ row }) => (
-        <span className="text-slate-300">{getViewedCount(row.original)}</span>
+        <span className="text-slate-300">{getReadersLabel(row.original)}</span>
       ),
     }),
-    col.accessor('notice_status', {
+    columnHelper.accessor('notice_status', {
       header: 'Status',
       cell: (info) => <StatusBadge status={info.getValue()} />,
     }),
-    col.display({
+    columnHelper.display({
       id: 'actions',
       header: 'Ações',
       cell: ({ row }) => {

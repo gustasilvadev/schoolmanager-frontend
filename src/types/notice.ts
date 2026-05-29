@@ -17,10 +17,6 @@ export interface NoticeItem {
   notice_status: NoticeStatus
   notice_priority: NoticePriority
   notice_visibilities?: NoticeVisibility[]
-
-  author_name?: string
-  created_by?: string | number
-  admin_id?: number
 }
 
 export interface ListNoticesParams {

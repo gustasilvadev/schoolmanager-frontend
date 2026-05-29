@@ -36,7 +36,10 @@ function AvisosPage() {
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
   useEffect(() => {
-    if (isError) toast.error('Erro ao carregar avisos')
+    if (isError) {
+      console.error('[useNotices] erro ao carregar avisos')
+      toast.error('Erro ao carregar avisos')
+    }
   }, [isError])
 
   function handleSearch(value: string) {
