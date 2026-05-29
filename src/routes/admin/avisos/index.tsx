@@ -4,8 +4,12 @@ import { Bell, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
 import { NoticeTable } from './-components/NoticeTable'
-import { useNotices } from '@/hooks/useNotices'
-import type { NoticeStatus } from '@/types/notice'
+import {
+  useDeleteNotice,
+  useNotices,
+  useRestoreNotice,
+} from '@/hooks/useNotices'
+import type { NoticeItem, NoticeStatus } from '@/types/notice'
 
 export const Route = createFileRoute('/admin/avisos/')({
   component: AvisosPage,
@@ -30,6 +34,9 @@ function AvisosPage() {
     notice_status: selectedStatus,
     includeDeleted: includeDeleted || selectedStatus === 2,
   })
+
+  const { mutate: deleteNotice } = useDeleteNotice()
+  const { mutate: restoreNotice } = useRestoreNotice()
 
   const notices = data?.notices ?? []
   const total = data?.total ?? 0
@@ -56,6 +63,26 @@ function AvisosPage() {
     if (nextStatus === 2) {
       setIncludeDeleted(true)
     }
+  }
+
+  function handleDelete(notice: NoticeItem) {
+    const confirmed = window.confirm(
+      `Deseja excluir o aviso "${notice.notice_title}"?`,
+    )
+  
+    if (!confirmed) return
+  
+    deleteNotice(notice.notice_id)
+  }
+  
+  function handleRestore(notice: NoticeItem) {
+    const confirmed = window.confirm(
+      `Deseja restaurar o aviso "${notice.notice_title}"?`,
+    )
+  
+    if (!confirmed) return
+  
+    restoreNotice(notice.notice_id)
   }
 
   return (
@@ -118,7 +145,7 @@ function AvisosPage() {
         </label>
       </div>
 
-      <NoticeTable notices={notices} isLoading={isLoading} />
+      <NoticeTable notices={notices} isLoading={isLoading} canEdit onDelete={handleDelete} onRestore={handleRestore} />
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between">

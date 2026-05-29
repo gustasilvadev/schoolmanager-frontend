@@ -12,3 +12,11 @@ export async function listNotices(
 
   return data
 }
+
+export async function deleteNotice(id: number): Promise<void> {
+  await api.delete(`/deleteNoticeById/${id}`)
+}
+
+export async function restoreNotice(id: number): Promise<void> {
+  await api.post(`/restoreNoticeById/${id}`)
+}
