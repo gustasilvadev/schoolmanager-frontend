@@ -27,6 +27,9 @@ import { Route as AdminAvisosIndexRouteImport } from './routes/admin/avisos/inde
 import { Route as AdminAvaliacoesIndexRouteImport } from './routes/admin/avaliacoes/index'
 import { Route as AdminAlunosIndexRouteImport } from './routes/admin/alunos/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as TeacherAvaliacoesIdLancarRouteImport } from './routes/teacher/avaliacoes/$id/lancar'
+import { Route as AdminAlunosIdBoletimRouteImport } from './routes/admin/alunos/$id/boletim'
+import { Route as TeacherTurmasIdAlunoStudentIdRouteImport } from './routes/teacher/turmas/$id/aluno/$studentId'
 
 const TeacherRoute = TeacherRouteImport.update({
   id: '/teacher',
@@ -117,6 +120,23 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRoute,
 } as any)
+const TeacherAvaliacoesIdLancarRoute =
+  TeacherAvaliacoesIdLancarRouteImport.update({
+    id: '/avaliacoes/$id/lancar',
+    path: '/avaliacoes/$id/lancar',
+    getParentRoute: () => TeacherRoute,
+  } as any)
+const AdminAlunosIdBoletimRoute = AdminAlunosIdBoletimRouteImport.update({
+  id: '/alunos/$id/boletim',
+  path: '/alunos/$id/boletim',
+  getParentRoute: () => AdminRoute,
+} as any)
+const TeacherTurmasIdAlunoStudentIdRoute =
+  TeacherTurmasIdAlunoStudentIdRouteImport.update({
+    id: '/turmas/$id/aluno/$studentId',
+    path: '/turmas/$id/aluno/$studentId',
+    getParentRoute: () => TeacherRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -136,6 +156,9 @@ export interface FileRoutesByFullPath {
   '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
   '/teacher/perfil/': typeof TeacherPerfilIndexRoute
   '/teacher/turmas/': typeof TeacherTurmasIndexRoute
+  '/admin/alunos/$id/boletim': typeof AdminAlunosIdBoletimRoute
+  '/teacher/avaliacoes/$id/lancar': typeof TeacherAvaliacoesIdLancarRoute
+  '/teacher/turmas/$id/aluno/$studentId': typeof TeacherTurmasIdAlunoStudentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -155,6 +178,9 @@ export interface FileRoutesByTo {
   '/teacher/dashboard': typeof TeacherDashboardIndexRoute
   '/teacher/perfil': typeof TeacherPerfilIndexRoute
   '/teacher/turmas': typeof TeacherTurmasIndexRoute
+  '/admin/alunos/$id/boletim': typeof AdminAlunosIdBoletimRoute
+  '/teacher/avaliacoes/$id/lancar': typeof TeacherAvaliacoesIdLancarRoute
+  '/teacher/turmas/$id/aluno/$studentId': typeof TeacherTurmasIdAlunoStudentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,6 +202,9 @@ export interface FileRoutesById {
   '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
   '/teacher/perfil/': typeof TeacherPerfilIndexRoute
   '/teacher/turmas/': typeof TeacherTurmasIndexRoute
+  '/admin/alunos/$id/boletim': typeof AdminAlunosIdBoletimRoute
+  '/teacher/avaliacoes/$id/lancar': typeof TeacherAvaliacoesIdLancarRoute
+  '/teacher/turmas/$id/aluno/$studentId': typeof TeacherTurmasIdAlunoStudentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -197,6 +226,9 @@ export interface FileRouteTypes {
     | '/teacher/dashboard/'
     | '/teacher/perfil/'
     | '/teacher/turmas/'
+    | '/admin/alunos/$id/boletim'
+    | '/teacher/avaliacoes/$id/lancar'
+    | '/teacher/turmas/$id/aluno/$studentId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -216,6 +248,9 @@ export interface FileRouteTypes {
     | '/teacher/dashboard'
     | '/teacher/perfil'
     | '/teacher/turmas'
+    | '/admin/alunos/$id/boletim'
+    | '/teacher/avaliacoes/$id/lancar'
+    | '/teacher/turmas/$id/aluno/$studentId'
   id:
     | '__root__'
     | '/'
@@ -236,6 +271,9 @@ export interface FileRouteTypes {
     | '/teacher/dashboard/'
     | '/teacher/perfil/'
     | '/teacher/turmas/'
+    | '/admin/alunos/$id/boletim'
+    | '/teacher/avaliacoes/$id/lancar'
+    | '/teacher/turmas/$id/aluno/$studentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -373,6 +411,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/teacher/avaliacoes/$id/lancar': {
+      id: '/teacher/avaliacoes/$id/lancar'
+      path: '/avaliacoes/$id/lancar'
+      fullPath: '/teacher/avaliacoes/$id/lancar'
+      preLoaderRoute: typeof TeacherAvaliacoesIdLancarRouteImport
+      parentRoute: typeof TeacherRoute
+    }
+    '/admin/alunos/$id/boletim': {
+      id: '/admin/alunos/$id/boletim'
+      path: '/alunos/$id/boletim'
+      fullPath: '/admin/alunos/$id/boletim'
+      preLoaderRoute: typeof AdminAlunosIdBoletimRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/teacher/turmas/$id/aluno/$studentId': {
+      id: '/teacher/turmas/$id/aluno/$studentId'
+      path: '/turmas/$id/aluno/$studentId'
+      fullPath: '/teacher/turmas/$id/aluno/$studentId'
+      preLoaderRoute: typeof TeacherTurmasIdAlunoStudentIdRouteImport
+      parentRoute: typeof TeacherRoute
+    }
   }
 }
 
@@ -395,6 +454,7 @@ interface AdminRouteChildren {
   AdminProfessoresIndexRoute: typeof AdminProfessoresIndexRoute
   AdminTurmasIndexRoute: typeof AdminTurmasIndexRoute
   AdminUsuariosIndexRoute: typeof AdminUsuariosIndexRoute
+  AdminAlunosIdBoletimRoute: typeof AdminAlunosIdBoletimRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -406,6 +466,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProfessoresIndexRoute: AdminProfessoresIndexRoute,
   AdminTurmasIndexRoute: AdminTurmasIndexRoute,
   AdminUsuariosIndexRoute: AdminUsuariosIndexRoute,
+  AdminAlunosIdBoletimRoute: AdminAlunosIdBoletimRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -416,6 +477,8 @@ interface TeacherRouteChildren {
   TeacherDashboardIndexRoute: typeof TeacherDashboardIndexRoute
   TeacherPerfilIndexRoute: typeof TeacherPerfilIndexRoute
   TeacherTurmasIndexRoute: typeof TeacherTurmasIndexRoute
+  TeacherAvaliacoesIdLancarRoute: typeof TeacherAvaliacoesIdLancarRoute
+  TeacherTurmasIdAlunoStudentIdRoute: typeof TeacherTurmasIdAlunoStudentIdRoute
 }
 
 const TeacherRouteChildren: TeacherRouteChildren = {
@@ -424,6 +487,8 @@ const TeacherRouteChildren: TeacherRouteChildren = {
   TeacherDashboardIndexRoute: TeacherDashboardIndexRoute,
   TeacherPerfilIndexRoute: TeacherPerfilIndexRoute,
   TeacherTurmasIndexRoute: TeacherTurmasIndexRoute,
+  TeacherAvaliacoesIdLancarRoute: TeacherAvaliacoesIdLancarRoute,
+  TeacherTurmasIdAlunoStudentIdRoute: TeacherTurmasIdAlunoStudentIdRoute,
 }
 
 const TeacherRouteWithChildren =
