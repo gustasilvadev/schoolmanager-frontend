@@ -1,9 +1,11 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { GraduationCap } from 'lucide-react'
 import { useLogin } from '@/hooks/useLogin'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 
 const loginSchema = z.object({
   email: z.email('E-mail inválido'),
@@ -26,8 +28,19 @@ export function LoginForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
-      <h2 className="mb-6 text-lg font-semibold text-white">Entrar na conta</h2>
+    <div className="space-y-8">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+          <GraduationCap className="h-4 w-4 text-white" />
+        </div>
+        <span className="text-sm font-semibold text-white">SchoolManager</span>
+      </div>
+      <div className="space-y-1.5">
+        <h1 className="text-3xl font-bold text-white">Acesse sua conta</h1>
+        <p className="text-sm text-slate-500">
+          Entre com suas credenciais para continuar.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
@@ -37,14 +50,18 @@ export function LoginForm() {
           error={errors.email?.message}
           {...register('email')}
         />
-        <Input
+        <PasswordInput
           label="Senha"
-          type="password"
           placeholder="••••••••"
           error={errors.password?.message}
           {...register('password')}
         />
-        <Button type="submit" size="full" disabled={isPending} className="mt-2">
+        <Button
+          type="submit"
+          size="full"
+          disabled={isPending}
+          className="mt-1"
+        >
           {isPending ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
