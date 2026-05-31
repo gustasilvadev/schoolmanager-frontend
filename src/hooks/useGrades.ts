@@ -21,6 +21,7 @@ export function useBulkCreateGrades() {
       queryClient.invalidateQueries({ queryKey: ['grades'] })
     },
     onError: (error: Error) => {
+      console.error('[useBulkCreateGrades] bulkCreateGrades error:', error)
       toast.error(error.message || 'Erro ao salvar notas em lote')
     },
   })
@@ -36,6 +37,7 @@ export function useUpdateGrade() {
       queryClient.invalidateQueries({ queryKey: ['grades'] })
     },
     onError: (error: Error) => {
+      console.error('[useUpdateGrade] updateGrade error:', error)
       toast.error(error.message || 'Erro ao atualizar nota')
     },
   })
