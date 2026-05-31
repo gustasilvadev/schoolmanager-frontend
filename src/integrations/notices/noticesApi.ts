@@ -1,5 +1,5 @@
 import { create } from '@/lib/api'
-import type { ListNoticesParams, ListNoticesResponse } from '@/types/notice'
+import type { CreateNoticePayload, ListNoticesParams, ListNoticesResponse, NoticeItem, UpdateNoticePayload } from '@/types/notice'
 
 const api = create('notices')
 
@@ -19,4 +19,30 @@ export async function deleteNotice(id: number): Promise<void> {
 
 export async function restoreNotice(id: number): Promise<void> {
   await api.post(`/restoreNoticeById/${id}`)
+}
+
+export async function getNoticeById(id: number): Promise<NoticeItem> {
+  const { data } = await api.get<NoticeItem>(`/listNoticeById/${id}`)
+
+  return data
+}
+
+export async function createNotice(
+  payload: CreateNoticePayload,
+): Promise<NoticeItem> {
+  const { data } = await api.post<NoticeItem>('/createNotice', payload)
+
+  return data
+}
+
+export async function updateNotice(
+  id: number,
+  payload: UpdateNoticePayload,
+): Promise<NoticeItem> {
+  const { data } = await api.put<NoticeItem>(
+    `/updateNoticeById/${id}`,
+    payload,
+  )
+
+  return data
 }
