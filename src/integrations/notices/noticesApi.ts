@@ -1,5 +1,11 @@
 import { create } from '@/lib/api'
-import type { CreateNoticePayload, ListNoticesParams, ListNoticesResponse, NoticeItem, UpdateNoticePayload } from '@/types/notice'
+import type {
+  CreateNoticePayload,
+  ListNoticesParams,
+  ListNoticesResponse,
+  NoticeItem,
+  UpdateNoticePayload,
+} from '@/types/notice'
 
 const api = create('notices')
 
@@ -39,10 +45,7 @@ export async function updateNotice(
   id: number,
   payload: UpdateNoticePayload,
 ): Promise<NoticeItem> {
-  const { data } = await api.put<NoticeItem>(
-    `/updateNoticeById/${id}`,
-    payload,
-  )
+  const { data } = await api.put<NoticeItem>(`/updateNoticeById/${id}`, payload)
 
   return data
 }

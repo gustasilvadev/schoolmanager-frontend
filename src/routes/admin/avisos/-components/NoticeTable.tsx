@@ -146,14 +146,14 @@ export function NoticeTable({
           <div className="flex items-center gap-1">
             {canEdit && !isDeleted && (
               <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(notice)}
-              title="Editar"
-              className="h-8 w-8 p-0"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-            </Button>
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(notice)}
+                title="Editar"
+                className="h-8 w-8 p-0"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
             )}
 
             {canEdit && isDeleted ? (

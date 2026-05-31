@@ -1,14 +1,38 @@
-import { useEffect, useState } from 'react'
-import { Search, X } from 'lucide-react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { X } from 'lucide-react'
+import type { FieldError } from 'react-hook-form'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { useTeachers } from '@/hooks/useTeachers'
-import {
-  useCreateNotice,
-  useNotice,
-  useUpdateNotice,
-} from '@/hooks/useNotices'
-import type { NoticeItem, NoticePriority } from '@/types/notice'
+import { useCreateNotice, useNotice, useUpdateNotice } from '@/hooks/useNotices'
+import type { NoticeItem } from '@/types/notice'
+import { NoticeFormFields } from './NoticeFormFields'
+import { VisibilitySelector } from './VisibilitySelector'
+import { TeacherPicker } from './TeacherPicker'
+
+const schema = z
+  .object({
+    notice_title: z.string().min(1, 'Título obrigatório'),
+    notice_content: z.string().min(1, 'Conteúdo obrigatório'),
+    notice_priority: z.union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+    ]),
+    visibility: z.enum(['public', 'restricted']),
+    teacher_ids: z.array(z.number()),
+  })
+  .refine(
+    (data) => data.visibility !== 'restricted' || data.teacher_ids.length > 0,
+    {
+      message: 'Selecione pelo menos um professor para aviso restrito.',
+      path: ['teacher_ids'],
+    },
+  )
+
+export type NoticeFormValues = z.infer<typeof schema>
 
 interface NoticeFormModalProps {
   open: boolean
@@ -16,133 +40,99 @@ interface NoticeFormModalProps {
   onClose: () => void
 }
 
-type VisibilityType = 'public' | 'restricted'
-
-interface NoticeFormState {
-  notice_title: string
-  notice_content: string
-  notice_priority: NoticePriority
-  visibility: VisibilityType
-  teacher_ids: number[]
-}
-
-const initialState: NoticeFormState = {
-  notice_title: '',
-  notice_content: '',
-  notice_priority: 2,
-  visibility: 'public',
-  teacher_ids: [],
-}
-
 export function NoticeFormModal({
   open,
   editing,
   onClose,
 }: NoticeFormModalProps) {
-  const [form, setForm] = useState<NoticeFormState>(initialState)
-  const [teacherSearch, setTeacherSearch] = useState('')
-
   const isEditing = Boolean(editing)
-  const isRestricted = form.visibility === 'restricted'
 
   const { data: noticeDetails, isLoading: isLoadingDetails } = useNotice(
     editing?.notice_id,
-    {
-      enabled: open && Boolean(editing?.notice_id),
-    },
-  )
-
-  const { data: teachersData, isLoading: isLoadingTeachers } = useTeachers(
-    {
-      page: 1,
-      limit: 100,
-      name: teacherSearch || undefined,
-      includeDeleted: false,
-    },
-    {
-      enabled: open && isRestricted,
-    },
+    { enabled: open && Boolean(editing?.notice_id) },
   )
 
   const { mutate: createNotice, isPending: isCreating } = useCreateNotice()
   const { mutate: updateNotice, isPending: isUpdating } = useUpdateNotice()
-
   const isSubmitting = isCreating || isUpdating
-  const teachers = teachersData?.teachers ?? []
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<NoticeFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      notice_title: '',
+      notice_content: '',
+      notice_priority: 2,
+      visibility: 'public',
+      teacher_ids: [],
+    },
+  })
+
+  const visibility = watch('visibility')
+  const teacherIds = watch('teacher_ids')
+  const teacherIdsError =
+    errors.teacher_ids?.root?.message ??
+    (errors.teacher_ids as FieldError | undefined)?.message
 
   useEffect(() => {
     if (!open) return
 
     if (!editing) {
-      setForm(initialState)
-      setTeacherSearch('')
+      reset({
+        notice_title: '',
+        notice_content: '',
+        notice_priority: 2,
+        visibility: 'public',
+        teacher_ids: [],
+      })
       return
     }
 
     const source = noticeDetails ?? editing
-    const visibilities = source.notice_visibilities ?? []
-    const teacherIds = visibilities.map((visibility) => visibility.teacher_id)
+    const ids = (source.notice_visibilities ?? []).map((v) => v.teacher_id)
 
-    setForm({
+    reset({
       notice_title: source.notice_title,
       notice_content: source.notice_content,
       notice_priority: source.notice_priority,
-      visibility: teacherIds.length > 0 ? 'restricted' : 'public',
-      teacher_ids: teacherIds,
+      visibility: ids.length > 0 ? 'restricted' : 'public',
+      teacher_ids: ids,
     })
-  }, [open, editing, noticeDetails])
+  }, [open, editing, noticeDetails, reset])
 
   if (!open) return null
 
-  function handleToggleTeacher(teacherId: number) {
-    setForm((current) => {
-      const alreadySelected = current.teacher_ids.includes(teacherId)
+  function onSubmit(values: NoticeFormValues) {
+    const payload = {
+      notice_title: values.notice_title.trim(),
+      notice_content: values.notice_content.trim(),
+      notice_priority: values.notice_priority,
+      ...(values.visibility === 'restricted'
+        ? { teacher_ids: values.teacher_ids }
+        : {}),
+    }
 
-      return {
-        ...current,
-        teacher_ids: alreadySelected
-          ? current.teacher_ids.filter((id) => id !== teacherId)
-          : [...current.teacher_ids, teacherId],
-      }
-    })
+    if (isEditing && editing) {
+      updateNotice({ id: editing.notice_id, payload }, { onSuccess: onClose })
+      return
+    }
+
+    createNotice(payload, { onSuccess: onClose })
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-  
-    if (isRestricted && form.teacher_ids.length === 0) {
-      alert('Selecione pelo menos um professor para aviso restrito.')
-      return
-    }
-  
-    const basePayload = {
-      notice_title: form.notice_title.trim(),
-      notice_content: form.notice_content.trim(),
-      notice_priority: form.notice_priority,
-      notice_status: 1 as const,
-    }
-  
-    const payload = {
-      ...basePayload,
-      ...(isRestricted ? { teacher_ids: form.teacher_ids } : {}),
-    }
-  
-    if (isEditing && editing) {
-      updateNotice(
-        {
-          id: editing.notice_id,
-          payload,
-        },
-        {
-          onSuccess: onClose,
-        },
-      )
-      return
-    }
-  
-    createNotice(payload, {
-      onSuccess: onClose,
-    })
+  function handleToggleTeacher(teacherId: number) {
+    setValue(
+      'teacher_ids',
+      teacherIds.includes(teacherId)
+        ? teacherIds.filter((id) => id !== teacherId)
+        : [...teacherIds, teacherId],
+    )
   }
 
   return (
@@ -157,7 +147,6 @@ export function NoticeFormModal({
               Preencha os dados do comunicado.
             </p>
           </div>
-
           <button
             type="button"
             onClick={onClose}
@@ -173,195 +162,26 @@ export function NoticeFormModal({
           </div>
         ) : (
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             className="max-h-[calc(90vh-73px)] space-y-5 overflow-y-auto px-6 py-5"
           >
-            <Input
-              label="Título"
-              value={form.notice_title}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  notice_title: event.target.value,
-                }))
-              }
-              placeholder="Digite o título do aviso"
-              required
+            <NoticeFormFields register={register} errors={errors} />
+
+            <VisibilitySelector
+              value={visibility}
+              onChange={(v) => {
+                setValue('visibility', v)
+                if (v === 'public') setValue('teacher_ids', [])
+              }}
             />
 
-            <div>
-              <label
-                htmlFor="notice_content"
-                className="mb-1.5 block text-sm font-medium text-slate-300"
-              >
-                Conteúdo
-              </label>
-              <textarea
-                id="notice_content"
-                value={form.notice_content}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    notice_content: event.target.value,
-                  }))
-                }
-                placeholder="Digite o conteúdo do aviso"
-                required
-                rows={6}
-                className="w-full resize-none rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            {visibility === 'restricted' && (
+              <TeacherPicker
+                selectedIds={teacherIds}
+                onToggle={handleToggleTeacher}
+                open={open}
+                error={teacherIdsError}
               />
-            </div>
-
-            <div>
-              <label
-                htmlFor="notice_priority"
-                className="mb-1.5 block text-sm font-medium text-slate-300"
-              >
-                Prioridade
-              </label>
-              <select
-                id="notice_priority"
-                value={form.notice_priority}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    notice_priority: Number(
-                      event.target.value,
-                    ) as NoticePriority,
-                  }))
-                }
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              >
-                <option value={1}>Baixa</option>
-                <option value={2}>Média</option>
-                <option value={3}>Alta</option>
-                <option value={4}>Urgente</option>
-              </select>
-            </div>
-
-            <div>
-              <p className="mb-2 text-sm font-medium text-slate-300">
-                Visibilidade
-              </p>
-
-              <div className="grid gap-3 md:grid-cols-2">
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 p-4 text-sm text-slate-300 transition hover:border-blue-500/50">
-                  <input
-                    type="radio"
-                    name="visibility"
-                    value="public"
-                    checked={form.visibility === 'public'}
-                    onChange={() =>
-                      setForm((current) => ({
-                        ...current,
-                        visibility: 'public',
-                        teacher_ids: [],
-                      }))
-                    }
-                  />
-                  <div>
-                    <p className="font-medium text-white">Pública</p>
-                    <p className="text-xs text-slate-500">
-                      Todos os professores poderão visualizar.
-                    </p>
-                  </div>
-                </label>
-
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 p-4 text-sm text-slate-300 transition hover:border-blue-500/50">
-                  <input
-                    type="radio"
-                    name="visibility"
-                    value="restricted"
-                    checked={form.visibility === 'restricted'}
-                    onChange={() =>
-                      setForm((current) => ({
-                        ...current,
-                        visibility: 'restricted',
-                      }))
-                    }
-                  />
-                  <div>
-                    <p className="font-medium text-white">Restrita</p>
-                    <p className="text-xs text-slate-500">
-                      Selecione quais professores poderão visualizar.
-                    </p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {isRestricted && (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-white">
-                      Professores
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {form.teacher_ids.length > 0
-                        ? `${form.teacher_ids.length} professor${
-                            form.teacher_ids.length !== 1 ? 'es' : ''
-                          } selecionado${
-                            form.teacher_ids.length !== 1 ? 's' : ''
-                          }`
-                        : 'Nenhum professor selecionado'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative mb-3">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                  <input
-                    type="text"
-                    value={teacherSearch}
-                    onChange={(event) => setTeacherSearch(event.target.value)}
-                    placeholder="Buscar professor..."
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                {isLoadingTeachers ? (
-                  <div className="rounded-lg border border-slate-800 px-4 py-6 text-center text-sm text-slate-500">
-                    Carregando professores...
-                  </div>
-                ) : teachers.length === 0 ? (
-                  <div className="rounded-lg border border-slate-800 px-4 py-6 text-center text-sm text-slate-500">
-                    Nenhum professor encontrado.
-                  </div>
-                ) : (
-                  <div className="max-h-52 space-y-2 overflow-y-auto pr-1">
-                    {teachers.map((teacher) => {
-                      const selected = form.teacher_ids.includes(
-                        teacher.teacher_id,
-                      )
-
-                      return (
-                        <label
-                          key={teacher.teacher_id}
-                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2.5 transition hover:border-blue-500/50"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selected}
-                            onChange={() =>
-                              handleToggleTeacher(teacher.teacher_id)
-                            }
-                          />
-
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-white">
-                              {teacher.teacher_name}
-                            </p>
-                            <p className="truncate text-xs text-slate-500">
-                              {teacher.teacher_email}
-                            </p>
-                          </div>
-                        </label>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
             )}
 
             <div className="flex justify-end gap-3 border-t border-slate-800 pt-5">
@@ -373,7 +193,6 @@ export function NoticeFormModal({
               >
                 Cancelar
               </Button>
-
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
                   ? 'Salvando...'

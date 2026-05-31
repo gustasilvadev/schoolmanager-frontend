@@ -1,6 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createNotice, deleteNotice, getNoticeById, listNotices, restoreNotice, updateNotice } from '@/integrations/notices/noticesApi'
-import type { CreateNoticePayload, ListNoticesParams, UpdateNoticePayload } from '@/types/notice'
+import {
+  createNotice,
+  deleteNotice,
+  getNoticeById,
+  listNotices,
+  restoreNotice,
+  updateNotice,
+} from '@/integrations/notices/noticesApi'
+import type {
+  CreateNoticePayload,
+  ListNoticesParams,
+  UpdateNoticePayload,
+} from '@/types/notice'
 import { toast } from 'sonner'
 
 export function useNotices(params?: ListNoticesParams) {
