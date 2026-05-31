@@ -1,3 +1,8 @@
+export interface GradeSheetStudent {
+  student_id: number
+  student_name?: string
+}
+
 export interface Student {
   student_id: number
   student_name: string
