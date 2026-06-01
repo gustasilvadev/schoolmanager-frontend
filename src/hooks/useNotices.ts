@@ -3,6 +3,7 @@ import {
   createNotice,
   deleteNotice,
   getNoticeById,
+  getNoticesForTeacher,
   listNotices,
   restoreNotice,
   updateNotice,
@@ -13,6 +14,16 @@ import type {
   UpdateNoticePayload,
 } from '@/types/notice'
 import { toast } from 'sonner'
+
+export function useTeacherNotices(teacherId: number | undefined) {
+  return useQuery({
+    queryKey: ['notices', 'teacher', teacherId],
+    queryFn: () => getNoticesForTeacher(teacherId!),
+    enabled: !!teacherId,
+    staleTime: 3 * 60 * 1000,
+    retry: false,
+  })
+}
 
 export function useNotices(params?: ListNoticesParams) {
   return useQuery({

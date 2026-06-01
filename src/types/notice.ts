@@ -52,3 +52,7 @@ export interface UpdateNoticePayload {
   notice_priority?: NoticePriority
   teacher_ids?: number[]
 }
+
+export interface TeacherNotice extends NoticeItem {
+  viewed: boolean
+}

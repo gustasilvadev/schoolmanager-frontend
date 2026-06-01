@@ -4,6 +4,7 @@ import type {
   ListNoticesParams,
   ListNoticesResponse,
   NoticeItem,
+  TeacherNotice,
   UpdateNoticePayload,
 } from '@/types/notice'
 
@@ -46,6 +47,14 @@ export async function updateNotice(
   payload: UpdateNoticePayload,
 ): Promise<NoticeItem> {
   const { data } = await api.put<NoticeItem>(`/updateNoticeById/${id}`, payload)
+
+  return data
+}
+
+export async function getNoticesForTeacher(
+  teacherId: number,
+): Promise<TeacherNotice[]> {
+  const { data } = await api.get<TeacherNotice[]>(`/teacher/${teacherId}`)
 
   return data
 }
