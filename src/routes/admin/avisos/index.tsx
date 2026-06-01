@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Bell, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Bell, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
 import { NoticeTable } from './-components/NoticeTable'
+import { NoticeFormModal } from './-components/NoticeFormModal'
 import {
   useDeleteNotice,
   useNotices,
@@ -24,6 +25,8 @@ function AvisosPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')
   const [includeDeleted, setIncludeDeleted] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<NoticeItem | null>(null)
 
   const selectedStatus = status === 'all' ? undefined : status
 
@@ -43,10 +46,7 @@ function AvisosPage() {
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
   useEffect(() => {
-    if (isError) {
-      console.error('[useNotices] erro ao carregar avisos')
-      toast.error('Erro ao carregar avisos')
-    }
+    if (isError) toast.error('Erro ao carregar avisos')
   }, [isError])
 
   function handleSearch(value: string) {
@@ -65,24 +65,39 @@ function AvisosPage() {
     }
   }
 
+  function handleCreate() {
+    setEditing(null)
+    setModalOpen(true)
+  }
+
+  function handleEdit(notice: NoticeItem) {
+    setEditing(notice)
+    setModalOpen(true)
+  }
+
   function handleDelete(notice: NoticeItem) {
     const confirmed = window.confirm(
       `Deseja excluir o aviso "${notice.notice_title}"?`,
     )
-  
+
     if (!confirmed) return
-  
+
     deleteNotice(notice.notice_id)
   }
-  
+
   function handleRestore(notice: NoticeItem) {
     const confirmed = window.confirm(
       `Deseja restaurar o aviso "${notice.notice_title}"?`,
     )
-  
+
     if (!confirmed) return
-  
+
     restoreNotice(notice.notice_id)
+  }
+
+  function handleCloseModal() {
+    setModalOpen(false)
+    setEditing(null)
   }
 
   return (
@@ -102,6 +117,11 @@ function AvisosPage() {
             </p>
           </div>
         </div>
+
+        <Button size="sm" onClick={handleCreate}>
+          <Plus className="mr-1.5 h-3.5 w-3.5" />
+          Novo Aviso
+        </Button>
       </div>
 
       <div className="grid gap-3 md:grid-cols-[1fr_180px_auto]">
@@ -145,7 +165,14 @@ function AvisosPage() {
         </label>
       </div>
 
-      <NoticeTable notices={notices} isLoading={isLoading} canEdit onDelete={handleDelete} onRestore={handleRestore} />
+      <NoticeTable
+        notices={notices}
+        isLoading={isLoading}
+        canEdit
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onRestore={handleRestore}
+      />
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
@@ -178,6 +205,12 @@ function AvisosPage() {
           </div>
         </div>
       )}
+
+      <NoticeFormModal
+        open={modalOpen}
+        editing={editing}
+        onClose={handleCloseModal}
+      />
     </div>
   )
 }

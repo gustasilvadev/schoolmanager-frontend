@@ -14,6 +14,7 @@ interface NoticeTableProps {
   notices: NoticeItem[]
   isLoading: boolean
   canEdit: boolean
+  onEdit: (notice: NoticeItem) => void
   onDelete: (notice: NoticeItem) => void
   onRestore: (notice: NoticeItem) => void
 }
@@ -87,6 +88,7 @@ export function NoticeTable({
   notices,
   isLoading,
   canEdit,
+  onEdit,
   onDelete,
   onRestore,
 }: NoticeTableProps) {
@@ -146,9 +148,9 @@ export function NoticeTable({
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => onEdit(notice)}
                 title="Editar"
                 className="h-8 w-8 p-0"
-                disabled
               >
                 <Pencil className="h-3.5 w-3.5" />
               </Button>

@@ -1,6 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { deleteNotice, listNotices, restoreNotice } from '@/integrations/notices/noticesApi'
-import type { ListNoticesParams } from '@/types/notice'
+import {
+  createNotice,
+  deleteNotice,
+  getNoticeById,
+  listNotices,
+  restoreNotice,
+  updateNotice,
+} from '@/integrations/notices/noticesApi'
+import type {
+  CreateNoticePayload,
+  ListNoticesParams,
+  UpdateNoticePayload,
+} from '@/types/notice'
 import { toast } from 'sonner'
 
 export function useNotices(params?: ListNoticesParams) {
@@ -40,6 +51,54 @@ export function useRestoreNotice() {
     onError: (error: Error) => {
       console.error('[useRestoreNotice]', error.message)
       toast.error(error.message || 'Erro ao restaurar aviso')
+    },
+  })
+}
+
+export function useNotice(id?: number, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ['notices', id],
+    queryFn: () => getNoticeById(id as number),
+    enabled: Boolean(id) && (options?.enabled ?? true),
+    staleTime: 3 * 60 * 1000,
+    retry: false,
+  })
+}
+
+export function useCreateNotice() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: CreateNoticePayload) => createNotice(payload),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['notices'] })
+      toast.success('Aviso criado com sucesso')
+    },
+    onError: (error: Error) => {
+      console.error('[useCreateNotice]', error.message)
+      toast.error(error.message || 'Erro ao criar aviso')
+    },
+  })
+}
+
+export function useUpdateNotice() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number
+      payload: UpdateNoticePayload
+    }) => updateNotice(id, payload),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['notices'] })
+      toast.success('Aviso atualizado com sucesso')
+    },
+    onError: (error: Error) => {
+      console.error('[useUpdateNotice]', error.message)
+      toast.error(error.message || 'Erro ao atualizar aviso')
     },
   })
 }

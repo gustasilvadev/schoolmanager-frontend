@@ -34,3 +34,21 @@ export interface ListNoticesResponse {
   page: number
   limit: number
 }
+
+export interface CreateNoticePayload {
+  notice_title: string
+  notice_content: string
+  notice_date?: string | null
+  notice_status?: NoticeStatus
+  notice_priority: NoticePriority
+  teacher_ids?: number[]
+}
+
+export interface UpdateNoticePayload {
+  notice_title?: string
+  notice_content?: string
+  notice_date?: string | null
+  notice_status?: NoticeStatus
+  notice_priority?: NoticePriority
+  teacher_ids?: number[]
+}
