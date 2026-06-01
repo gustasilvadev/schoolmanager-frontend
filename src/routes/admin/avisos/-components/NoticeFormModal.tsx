@@ -113,9 +113,7 @@ export function NoticeFormModal({
       notice_title: values.notice_title.trim(),
       notice_content: values.notice_content.trim(),
       notice_priority: values.notice_priority,
-      ...(values.visibility === 'restricted'
-        ? { teacher_ids: values.teacher_ids }
-        : {}),
+      teacher_ids: values.visibility === 'restricted' ? values.teacher_ids : [],
     }
 
     if (isEditing && editing) {
