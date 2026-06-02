@@ -1,5 +1,11 @@
 import { create } from '@/lib/api'
-import type { ListStudentsParams, ListStudentsResponse } from '@/types/student'
+import type {
+  ListStudentsParams,
+  ListStudentsResponse,
+  Student,
+  CreateStudentPayload,
+  UpdateStudentPayload,
+} from '@/types/student'
 
 const api = create('students')
 
@@ -9,5 +15,20 @@ export async function listStudents(
   const { data } = await api.get<ListStudentsResponse>('/listStudents', {
     params,
   })
+  return data
+}
+
+export async function createStudent(
+  payload: CreateStudentPayload,
+): Promise<Student> {
+  const { data } = await api.post<Student>('/createStudent', payload)
+  return data
+}
+
+export async function updateStudent(
+  id: number,
+  payload: UpdateStudentPayload,
+): Promise<Student> {
+  const { data } = await api.put<Student>(`/updateStudentById/${id}`, payload)
   return data
 }
