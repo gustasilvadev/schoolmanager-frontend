@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight, Search, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, UserPlus, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { useStudents } from '@/hooks/useStudents'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { StudentTable } from './-components/StudentTable'
-import { StudentEditModal } from './-components/StudentEditModal'
+import { StudentFormModal } from './-components/StudentFormModal'
 import type { Student } from '@/types/student'
 
 export const Route = createFileRoute('/admin/alunos/')({
@@ -19,6 +19,7 @@ function AlunosPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [includeDeleted, setIncludeDeleted] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [pendingDelete, setPendingDelete] = useState<Student | null>(null)
   const [pendingRestore, setPendingRestore] = useState<Student | null>(null)
@@ -91,33 +92,37 @@ function AlunosPage() {
             </div>
           </div>
 
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-400">
-            <span>Incluir excluídos</span>
-            <div className="relative">
-              <input
-                type="checkbox"
-                className="peer sr-only"
-                checked={includeDeleted}
-                onChange={(e) => handleToggleDeleted(e.target.checked)}
-              />
-              <div className="h-5 w-9 rounded-full bg-slate-700 transition-colors peer-checked:bg-blue-600" />
-              <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
-            </div>
-          </label>
+          <div className="flex items-center gap-3">
+            <Button onClick={() => setIsCreating(true)}>
+              <UserPlus className="h-4 w-4" />
+              Novo Aluno
+            </Button>
+
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-400">
+              <span>Incluir excluídos</span>
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  className="peer sr-only"
+                  checked={includeDeleted}
+                  onChange={(e) => handleToggleDeleted(e.target.checked)}
+                />
+                <div className="h-5 w-9 rounded-full bg-slate-700 transition-colors peer-checked:bg-blue-600" />
+                <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
+              </div>
+            </label>
+          </div>
         </div>
 
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Buscar por nome..."
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <input
+            type="text"
+            placeholder="Buscar por nome..."
+            value={search}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full rounded-lg border border-slate-700 bg-slate-800 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
         </div>
 
         <StudentTable
@@ -157,7 +162,13 @@ function AlunosPage() {
         )}
       </div>
 
-      <StudentEditModal
+      <StudentFormModal
+        student={null}
+        open={isCreating}
+        onClose={() => setIsCreating(false)}
+      />
+
+      <StudentFormModal
         student={editingStudent}
         open={editingStudent !== null}
         onClose={() => setEditingStudent(null)}
