@@ -61,3 +61,8 @@ export interface UpdateStudentPayload {
   student_status?: number
   responsibles?: CreateResponsiblePayload[]
 }
+
+export interface RestoreStudent {
+  message: string
+  student: Student
+}

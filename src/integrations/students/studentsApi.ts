@@ -5,6 +5,7 @@ import type {
   Student,
   CreateStudentPayload,
   UpdateStudentPayload,
+  RestoreStudent,
 } from '@/types/student'
 
 const api = create('students')
@@ -30,5 +31,14 @@ export async function updateStudent(
   payload: UpdateStudentPayload,
 ): Promise<Student> {
   const { data } = await api.put<Student>(`/updateStudentById/${id}`, payload)
+  return data
+}
+
+export async function deleteStudent(id: number): Promise<void> {
+  await api.delete(`/deleteStudentById/${id}`)
+}
+
+export async function restoreStudent(id: number): Promise<RestoreStudent> {
+  const { data } = await api.post<RestoreStudent>(`/restoreStudentById/${id}`)
   return data
 }
