@@ -5,6 +5,7 @@ import {
   getNoticeById,
   getNoticesForTeacher,
   listNotices,
+  markAsViewed,
   restoreNotice,
   updateNotice,
 } from '@/integrations/notices/noticesApi'
@@ -110,6 +111,21 @@ export function useUpdateNotice() {
     onError: (error: Error) => {
       console.error('[useUpdateNotice]', error.message)
       toast.error(error.message || 'Erro ao atualizar aviso')
+    },
+  })
+}
+
+export function useMarkAsViewed() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (noticeId: number) => markAsViewed(noticeId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['notices'] })
+    },
+    onError: (error: Error) => {
+      console.error('[useMarkAsViewed]', error.message)
+      toast.error(error.message || 'Erro ao marcar aviso como lido')
     },
   })
 }

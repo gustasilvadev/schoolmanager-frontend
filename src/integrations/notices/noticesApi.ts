@@ -58,3 +58,7 @@ export async function getNoticesForTeacher(
 
   return data
 }
+
+export async function markAsViewed(noticeId: number): Promise<void> {
+  await api.post(`/markAsViewed/${noticeId}`)
+}
