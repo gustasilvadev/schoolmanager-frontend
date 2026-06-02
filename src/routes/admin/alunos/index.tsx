@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search, UserPlus, Users } from 'lucide-react'
 import { toast } from 'sonner'
-import { useStudents } from '@/hooks/useStudents'
+import { useStudents, useDeleteStudent, useRestoreStudent } from '@/hooks/useStudents'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { StudentTable } from './-components/StudentTable'
@@ -23,6 +23,9 @@ function AlunosPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [pendingDelete, setPendingDelete] = useState<Student | null>(null)
   const [pendingRestore, setPendingRestore] = useState<Student | null>(null)
+
+  const { mutateAsync: deleteStudent, isPending: isDeleting } = useDeleteStudent()
+  const { mutateAsync: restoreStudent, isPending: isRestoring } = useRestoreStudent()
 
   const { data, isLoading, isError } = useStudents({
     page,
@@ -57,14 +60,26 @@ function AlunosPage() {
     setPendingRestore(student)
   }
 
-  function handleConfirmDelete() {
-    setPendingDelete(null)
-    toast.info('Exclusão de alunos em desenvolvimento.')
+  async function handleConfirmDelete() {
+    if (!pendingDelete) return
+    try {
+      await deleteStudent(pendingDelete.student_id)
+      toast.success('Aluno excluído com sucesso')
+      setPendingDelete(null)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao excluir aluno')
+    }
   }
 
-  function handleConfirmRestore() {
-    setPendingRestore(null)
-    toast.info('Restauração de alunos em desenvolvimento.')
+  async function handleConfirmRestore() {
+    if (!pendingRestore) return
+    try {
+      const { message } = await restoreStudent(pendingRestore.student_id)
+      toast.success(message)
+      setPendingRestore(null)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao restaurar aluno')
+    }
   }
 
   useEffect(() => {
@@ -180,6 +195,7 @@ function AlunosPage() {
         description={`Deseja excluir o aluno "${pendingDelete?.student_name}"?\nEsta ação pode ser desfeita posteriormente.`}
         confirmLabel="Excluir"
         variant="danger"
+        isLoading={isDeleting}
         onConfirm={handleConfirmDelete}
         onClose={() => setPendingDelete(null)}
       />
@@ -189,6 +205,7 @@ function AlunosPage() {
         title="Restaurar Aluno"
         description={`Deseja restaurar o aluno "${pendingRestore?.student_name}"?\nO registro voltará a ficar ativo no sistema.`}
         confirmLabel="Restaurar"
+        isLoading={isRestoring}
         onConfirm={handleConfirmRestore}
         onClose={() => setPendingRestore(null)}
       />
