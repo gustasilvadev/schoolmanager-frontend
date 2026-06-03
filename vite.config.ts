@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
     : undefined
 
   return {
+    base: '/20261prj5/schoolManagement/',
     resolve: { tsconfigPaths: true },
     plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
     server: {
