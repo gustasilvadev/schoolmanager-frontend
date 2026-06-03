@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
     plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
     server: {
       port: 9518,
+      host: true,
       ...(proxy ? { proxy } : {}),
     },
   }

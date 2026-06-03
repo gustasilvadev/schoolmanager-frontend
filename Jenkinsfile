@@ -7,12 +7,6 @@ pipeline {
             }
         }
 
-        stage('Instalar Dependências') {
-            steps {
-                sh 'npm ci'
-            }
-        }
-
         stage('Construir Imagem Docker') {
             steps {
                 script {
