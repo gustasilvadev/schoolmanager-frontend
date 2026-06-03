@@ -32,7 +32,7 @@ pipeline {
 
                     sh "docker stop ${appName} || true"
                     sh "docker rm -v ${appName} || true"
-                    sh "docker run -d --name ${appName} -p 9518:9518 ${imageTag}"
+                    sh "docker run -d --name ${appName} -p 9518:9518 --env-file .env ${imageTag}"
                 }
             }
         }
