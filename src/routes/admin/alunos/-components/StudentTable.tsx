@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Eye, Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Student } from '@/types/student'
@@ -12,6 +12,7 @@ import type { Student } from '@/types/student'
 interface StudentTableProps {
   students: Student[]
   isLoading: boolean
+  onView: (student: Student) => void
   onEdit: (student: Student) => void
   onDelete: (student: Student) => void
   onRestore: (student: Student) => void
@@ -34,6 +35,7 @@ function StudentTableEmpty({ isLoading }: { isLoading: boolean }) {
 export function StudentTable({
   students,
   isLoading,
+  onView,
   onEdit,
   onDelete,
   onRestore,
@@ -66,6 +68,16 @@ export function StudentTable({
 
         return (
           <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onView(student)}
+              title="Ver detalhes"
+              className="h-8 w-8 p-0"
+            >
+              <Eye className="h-3.5 w-3.5" />
+            </Button>
+
             {!isDeleted && (
               <Button
                 variant="ghost"

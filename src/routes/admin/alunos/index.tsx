@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { StudentTable } from './-components/StudentTable'
 import { StudentFormModal } from './-components/StudentFormModal'
+import { StudentViewModal } from './-components/StudentViewModal'
 import type { Student } from '@/types/student'
 
 export const Route = createFileRoute('/admin/alunos/')({
@@ -20,6 +21,7 @@ function AlunosPage() {
   const [search, setSearch] = useState('')
   const [includeDeleted, setIncludeDeleted] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+  const [viewingStudent, setViewingStudent] = useState<Student | null>(null)
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [pendingDelete, setPendingDelete] = useState<Student | null>(null)
   const [pendingRestore, setPendingRestore] = useState<Student | null>(null)
@@ -46,6 +48,10 @@ function AlunosPage() {
   function handleToggleDeleted(checked: boolean) {
     setIncludeDeleted(checked)
     setPage(1)
+  }
+
+  function handleView(student: Student) {
+    setViewingStudent(student)
   }
 
   function handleEdit(student: Student) {
@@ -143,6 +149,7 @@ function AlunosPage() {
         <StudentTable
           students={students}
           isLoading={isLoading}
+          onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onRestore={handleRestore}
@@ -176,6 +183,12 @@ function AlunosPage() {
           </div>
         )}
       </div>
+
+      <StudentViewModal
+        student={viewingStudent}
+        open={viewingStudent !== null}
+        onClose={() => setViewingStudent(null)}
+      />
 
       <StudentFormModal
         student={null}
