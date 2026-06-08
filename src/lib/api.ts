@@ -27,12 +27,13 @@ export function create(service: string) {
 
         if (error.response?.status === 401) {
           clearSession()
-          window.location.href = '/login'
+          window.location.href = `${import.meta.env.BASE_URL}login`
         }
 
         const message = error.response?.data?.error ?? error.message
         return Promise.reject(new Error(message))
       }
+
       return Promise.reject(new Error(String(error)))
     },
   )

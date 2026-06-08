@@ -20,6 +20,7 @@ export function useLogin() {
         role: data.user.role,
         userId: data.user.user_id,
         userEmail: data.user.user_email,
+        teacherId: data.user.teacher_id,
       })
 
       navigate({
