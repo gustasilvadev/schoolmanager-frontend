@@ -1,7 +1,8 @@
 import { CalendarDays, Eye, ShieldCheck, Users, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { NoticePriorityBadge } from './NoticePriorityBadge'
+import { NoticePriorityBadge } from '@/components/shared/NoticePriorityBadge'
+import { formatNoticeDate, getNoticeReadersInfo } from '@/utils/noticeFormatters'
 import {
   getNoticeVisibilityLabel,
   NoticeVisibilityBadge,
@@ -15,32 +16,6 @@ interface AdminNoticeDetailsModalProps {
   onClose: () => void
 }
 
-function formatDate(value: string | null) {
-  if (!value) return '—'
-
-  return new Date(value).toLocaleDateString('pt-BR', {
-    timeZone: 'UTC',
-  })
-}
-
-function getReadersInfo(notice: NoticeItem) {
-  const visibilities = notice.notice_visibilities ?? []
-
-  if (visibilities.length === 0) {
-    return {
-      read: 0,
-      total: 0,
-    }
-  }
-
-  return {
-    read: visibilities.filter((visibility) =>
-      Boolean(visibility.notice_visibility_viewed_in),
-    ).length,
-    total: visibilities.length,
-  }
-}
-
 export function AdminNoticeDetailsModal({
   open,
   notice,
@@ -51,7 +26,7 @@ export function AdminNoticeDetailsModal({
 
   const visibilityLabel = getNoticeVisibilityLabel(notice)
   const visibilities = notice.notice_visibilities ?? []
-  const readers = getReadersInfo(notice)
+  const readers = getNoticeReadersInfo(notice)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
@@ -72,7 +47,7 @@ export function AdminNoticeDetailsModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            className="cursor-pointer rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
           >
             <X className="h-4 w-4" />
           </button>
@@ -98,7 +73,7 @@ export function AdminNoticeDetailsModal({
           <div className="space-y-3 border-t border-slate-800 pt-5">
             <div className="flex items-center gap-3 text-sm text-slate-400">
               <CalendarDays className="h-4 w-4 text-slate-500" />
-              <span>Data de publicação: {formatDate(notice.notice_date)}</span>
+              <span>Data de publicação: {formatNoticeDate(notice.notice_date)}</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm text-slate-400">

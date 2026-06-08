@@ -27,7 +27,7 @@ export function create(service: string) {
 
         if (error.response?.status === 401) {
           clearSession()
-          window.location.href = `${import.meta.env.BASE_URL}login`
+          window.location.href = '/login'
         }
 
         const message = error.response?.data?.error ?? error.message

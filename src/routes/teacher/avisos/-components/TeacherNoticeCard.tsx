@@ -1,7 +1,8 @@
 import { CheckCheck, ChevronDown, ChevronUp, Mail, MailOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { NoticePriorityBadge } from '@/components/shared/NoticePriorityBadge'
 import { cn } from '@/lib/utils'
-import { TeacherNoticePriorityBadge } from './TeacherNoticePriorityBadge'
+import { formatNoticeDate } from '@/utils/noticeFormatters'
 import type { TeacherNotice } from '@/types/notice'
 
 interface TeacherNoticeCardProps {
@@ -10,14 +11,6 @@ interface TeacherNoticeCardProps {
   isMarkingAsViewed: boolean
   onToggle: (notice: TeacherNotice) => void
   onMarkAsViewed: (notice: TeacherNotice) => void
-}
-
-function formatDate(value: string | null) {
-  if (!value) return '—'
-
-  return new Date(value).toLocaleDateString('pt-BR', {
-    timeZone: 'UTC',
-  })
 }
 
 export function TeacherNoticeCard({
@@ -39,7 +32,7 @@ export function TeacherNoticeCard({
       <button
         type="button"
         onClick={() => onToggle(notice)}
-        className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left"
+        className="flex w-full cursor-pointer items-start justify-between gap-4 px-5 py-4 text-left"
       >
         <div className="flex min-w-0 gap-3">
           <div
@@ -63,10 +56,10 @@ export function TeacherNoticeCard({
                 </span>
               )}
 
-              <TeacherNoticePriorityBadge priority={notice.notice_priority} />
+              <NoticePriorityBadge priority={notice.notice_priority} />
 
               <span className="text-xs text-slate-500">
-                {formatDate(notice.notice_date)}
+                {formatNoticeDate(notice.notice_date)}
               </span>
             </div>
 

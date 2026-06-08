@@ -1,8 +1,9 @@
 import { CalendarDays, Eye, Pencil, RotateCcw, Trash2, Users } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { NoticePriorityBadge } from '@/components/shared/NoticePriorityBadge'
 import { cn } from '@/lib/utils'
-import { NoticePriorityBadge } from './NoticePriorityBadge'
+import { formatNoticeDate } from '@/utils/noticeFormatters'
 import { NoticeVisibilityBadge } from './NoticeVisibilityBadge'
 import type { NoticeItem } from '@/types/notice'
 
@@ -14,14 +15,6 @@ interface AdminNoticeCardProps {
   onEdit: (notice: NoticeItem) => void
   onDelete: (notice: NoticeItem) => void
   onRestore: (notice: NoticeItem) => void
-}
-
-function formatDate(value: string | null) {
-  if (!value) return '—'
-
-  return new Date(value).toLocaleDateString('pt-BR', {
-    timeZone: 'UTC',
-  })
 }
 
 function getReadersLabel(notice: NoticeItem) {
@@ -62,7 +55,7 @@ export function AdminNoticeCard({
         if (event.key === 'Enter' || event.key === ' ') onSelect(notice)
       }}
       className={cn(
-        'rounded-2xl border bg-slate-900/50 px-5 py-4 text-left transition hover:border-blue-500/40 hover:bg-slate-900',
+        'cursor-pointer rounded-2xl border bg-slate-900/50 px-5 py-4 text-left transition hover:border-blue-500/40 hover:bg-slate-900',
         selected
           ? 'border-blue-500/70 bg-blue-500/5 shadow-[0_0_0_1px_rgba(59,130,246,0.15)]'
           : 'border-slate-800',
@@ -88,7 +81,7 @@ export function AdminNoticeCard({
         <div className="space-y-2 border-slate-800 text-xs text-slate-400 lg:border-l lg:pl-5">
           <div className="flex items-center gap-2">
             <CalendarDays className="h-3.5 w-3.5 text-slate-500" />
-            <span>{formatDate(notice.notice_date)}</span>
+            <span>{formatNoticeDate(notice.notice_date)}</span>
           </div>
 
           <div className="flex items-center gap-2">

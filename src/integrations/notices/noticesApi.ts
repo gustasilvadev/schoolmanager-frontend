@@ -62,15 +62,3 @@ export async function getNoticesForTeacher(
 export async function markAsViewed(noticeId: number): Promise<void> {
   await api.post(`/markAsViewed/${noticeId}`)
 }
-
-export async function listTeacherNotices(
-  teacherId: number,
-): Promise<TeacherNotice[]> {
-  const { data } = await api.get<TeacherNotice[]>(`/teacher/${teacherId}`)
-
-  return data
-}
-
-export async function markNoticeAsViewed(noticeId: number): Promise<void> {
-  await api.post(`/markAsViewed/${noticeId}`)
-}

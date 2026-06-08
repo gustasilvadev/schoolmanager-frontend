@@ -114,13 +114,13 @@ function AvisosPage() {
     setModalOpen(true)
   }
 
- function handleSelect(notice: NoticeItem) {
-  setSelectedNoticeId((currentId) =>
-    currentId === notice.notice_id ? null : notice.notice_id,
-  )
+  function handleSelect(notice: NoticeItem) {
+    setSelectedNoticeId((currentId) =>
+      currentId === notice.notice_id ? null : notice.notice_id,
+    )
 
-  setDetailsOpen(false)
-}
+    setDetailsOpen(false)
+  }
 
   function handleViewFull(notice: NoticeItem) {
     setSelectedNoticeId(notice.notice_id)
@@ -158,9 +158,9 @@ function AvisosPage() {
   }
 
   function handleClosePreview() {
-  setSelectedNoticeId(null)
-  setDetailsOpen(false)
-}
+    setSelectedNoticeId(null)
+    setDetailsOpen(false)
+  }
 
   return (
     <div className="space-y-6">
@@ -290,22 +290,21 @@ function AvisosPage() {
             </div>
           )}
         </div>
-<div className="xl:sticky xl:top-6 xl:self-start">
-  <div className="xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
-    
-   <AdminNoticePreview
-  notice={selectedNotice}
-  canEdit
-  teacherNameById={teacherNameById}
-  onViewFull={handleViewFull}
-  onClosePreview={handleClosePreview}
-  onEdit={handleEdit}
-  onDelete={handleDelete}
-  onRestore={handleRestore}
-/>
-  </div>
 
-</div>
+        <div className="xl:sticky xl:top-6 xl:self-start">
+          <div className="xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
+            <AdminNoticePreview
+              notice={selectedNotice}
+              canEdit
+              teacherNameById={teacherNameById}
+              onViewFull={handleViewFull}
+              onClosePreview={handleClosePreview}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onRestore={handleRestore}
+            />
+          </div>
+        </div>
       </div>
 
       <NoticeFormModal

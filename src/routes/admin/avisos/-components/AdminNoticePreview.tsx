@@ -2,16 +2,14 @@ import {
   CalendarDays,
   Eye,
   ExternalLink,
-  Pencil,
-  RotateCcw,
   ShieldCheck,
-  Trash2,
   Users,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { NoticePriorityBadge } from './NoticePriorityBadge'
+import { NoticePriorityBadge } from '@/components/shared/NoticePriorityBadge'
+import { formatNoticeDate, getNoticeReadersInfo } from '@/utils/noticeFormatters'
 import {
   getNoticeVisibilityLabel,
   NoticeVisibilityBadge,
@@ -27,32 +25,6 @@ interface AdminNoticePreviewProps {
   onDelete: (notice: NoticeItem) => void
   onRestore: (notice: NoticeItem) => void
   onClosePreview: () => void
-}
-
-function formatDate(value: string | null) {
-  if (!value) return '—'
-
-  return new Date(value).toLocaleDateString('pt-BR', {
-    timeZone: 'UTC',
-  })
-}
-
-function getReadersInfo(notice: NoticeItem) {
-  const visibilities = notice.notice_visibilities ?? []
-
-  if (visibilities.length === 0) {
-    return {
-      read: 0,
-      total: 0,
-    }
-  }
-
-  return {
-    read: visibilities.filter((visibility) =>
-      Boolean(visibility.notice_visibility_viewed_in),
-    ).length,
-    total: visibilities.length,
-  }
 }
 
 export function AdminNoticePreview({
@@ -85,29 +57,29 @@ export function AdminNoticePreview({
 
   const isDeleted = notice.notice_status === 2
   const visibilities = notice.notice_visibilities ?? []
-  const readers = getReadersInfo(notice)
+  const readers = getNoticeReadersInfo(notice)
   const visibilityLabel = getNoticeVisibilityLabel(notice)
 
   return (
     <aside className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80">
       <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
-  <div className="flex items-center gap-2">
-    <Eye className="h-4 w-4 text-blue-400" />
+        <div className="flex items-center gap-2">
+          <Eye className="h-4 w-4 text-blue-400" />
 
-    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-      Prévia do aviso
-    </p>
-  </div>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            Prévia do aviso
+          </p>
+        </div>
 
-  <button
-    type="button"
-    onClick={onClosePreview}
-    title="Fechar prévia"
-    className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-800 hover:text-white"
-  >
-    <X className="h-4 w-4" />
-  </button>
-</div>
+        <button
+          type="button"
+          onClick={onClosePreview}
+          title="Fechar prévia"
+          className="cursor-pointer rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-800 hover:text-white"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
 
       <div className="space-y-6 px-5 py-5">
         <div>
@@ -125,7 +97,7 @@ export function AdminNoticePreview({
         <div className="space-y-3 border-t border-slate-800 pt-5">
           <div className="flex items-center gap-3 text-sm text-slate-400">
             <CalendarDays className="h-4 w-4 text-slate-500" />
-            <span>Data de publicação: {formatDate(notice.notice_date)}</span>
+            <span>Data de publicação: {formatNoticeDate(notice.notice_date)}</span>
           </div>
 
           <div className="flex items-center gap-3 text-sm text-slate-400">

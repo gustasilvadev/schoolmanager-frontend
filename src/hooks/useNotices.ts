@@ -8,8 +8,6 @@ import {
   markAsViewed,
   restoreNotice,
   updateNotice,
-  listTeacherNotices,
-  markNoticeAsViewed,
 } from '@/integrations/notices/noticesApi'
 import type {
   CreateNoticePayload,
@@ -137,7 +135,7 @@ export function useMarkNoticeAsViewed() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: markNoticeAsViewed,
+    mutationFn: markAsViewed,
 
     onSuccess: (_, noticeId) => {
       queryClient.setQueriesData<TeacherNotice[]>(
