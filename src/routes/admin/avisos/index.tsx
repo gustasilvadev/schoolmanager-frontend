@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Bell, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
-import { NoticeTable } from './-components/NoticeTable'
+import { useTeachers } from '@/hooks/useTeachers'
 import { NoticeFormModal } from './-components/NoticeFormModal'
+import { AdminNoticeCard } from './-components/AdminNoticeCard'
+import { AdminNoticePreview } from './-components/AdminNoticePreview'
+import { AdminNoticeDetailsModal } from './-components/AdminNoticeDetailsModal'
 import {
   useDeleteNotice,
   useNotices,
@@ -26,7 +29,9 @@ function AvisosPage() {
   const [status, setStatus] = useState<StatusFilter>('all')
   const [includeDeleted, setIncludeDeleted] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const [editing, setEditing] = useState<NoticeItem | null>(null)
+  const [selectedNoticeId, setSelectedNoticeId] = useState<number | null>(null)
 
   const selectedStatus = status === 'all' ? undefined : status
 
@@ -38,6 +43,12 @@ function AvisosPage() {
     includeDeleted: includeDeleted || selectedStatus === 2,
   })
 
+  const { data: teachersData } = useTeachers({
+    page: 1,
+    limit: 100,
+    includeDeleted: true,
+  })
+
   const { mutate: deleteNotice } = useDeleteNotice()
   const { mutate: restoreNotice } = useRestoreNotice()
 
@@ -45,13 +56,44 @@ function AvisosPage() {
   const total = data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
+  const teacherNameById = useMemo(() => {
+    const teachers = teachersData?.teachers ?? []
+
+    return new Map(
+      teachers.map((teacher) => [teacher.teacher_id, teacher.teacher_name]),
+    )
+  }, [teachersData])
+
+  const selectedNotice = useMemo(() => {
+    if (!selectedNoticeId) return null
+
+    return (
+      notices.find((notice) => notice.notice_id === selectedNoticeId) ?? null
+    )
+  }, [notices, selectedNoticeId])
+
   useEffect(() => {
     if (isError) toast.error('Erro ao carregar avisos')
   }, [isError])
 
+  useEffect(() => {
+    if (!selectedNoticeId) return
+
+    const hasSelectedNotice = notices.some(
+      (notice) => notice.notice_id === selectedNoticeId,
+    )
+
+    if (!hasSelectedNotice) {
+      setSelectedNoticeId(null)
+      setDetailsOpen(false)
+    }
+  }, [notices, selectedNoticeId])
+
   function handleSearch(value: string) {
     setSearch(value)
     setPage(1)
+    setSelectedNoticeId(null)
+    setDetailsOpen(false)
   }
 
   function handleStatusChange(value: string) {
@@ -59,6 +101,8 @@ function AvisosPage() {
 
     setStatus(nextStatus)
     setPage(1)
+    setSelectedNoticeId(null)
+    setDetailsOpen(false)
 
     if (nextStatus === 2) {
       setIncludeDeleted(true)
@@ -68,6 +112,19 @@ function AvisosPage() {
   function handleCreate() {
     setEditing(null)
     setModalOpen(true)
+  }
+
+  function handleSelect(notice: NoticeItem) {
+    setSelectedNoticeId((currentId) =>
+      currentId === notice.notice_id ? null : notice.notice_id,
+    )
+
+    setDetailsOpen(false)
+  }
+
+  function handleViewFull(notice: NoticeItem) {
+    setSelectedNoticeId(notice.notice_id)
+    setDetailsOpen(true)
   }
 
   function handleEdit(notice: NoticeItem) {
@@ -100,9 +157,14 @@ function AvisosPage() {
     setEditing(null)
   }
 
+  function handleClosePreview() {
+    setSelectedNoticeId(null)
+    setDetailsOpen(false)
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600/10">
             <Bell className="h-5 w-5 text-blue-400" />
@@ -112,7 +174,9 @@ function AvisosPage() {
             <h1 className="text-lg font-semibold text-white">Avisos</h1>
             <p className="text-xs text-slate-400">
               {total > 0
-                ? `${total} aviso${total !== 1 ? 's' : ''}`
+                ? `${total} aviso${total !== 1 ? 's' : ''} encontrado${
+                    total !== 1 ? 's' : ''
+                  }`
                 : 'Nenhum aviso'}
             </p>
           </div>
@@ -157,6 +221,8 @@ function AvisosPage() {
               onChange={(event) => {
                 setIncludeDeleted(event.target.checked)
                 setPage(1)
+                setSelectedNoticeId(null)
+                setDetailsOpen(false)
               }}
             />
             <div className="h-5 w-9 rounded-full bg-slate-700 transition-colors peer-checked:bg-blue-600" />
@@ -165,51 +231,93 @@ function AvisosPage() {
         </label>
       </div>
 
-      <NoticeTable
-        notices={notices}
-        isLoading={isLoading}
-        canEdit
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onRestore={handleRestore}
-      />
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="space-y-3">
+          {isLoading ? (
+            <div className="flex h-40 items-center justify-center rounded-xl border border-slate-800">
+              <p className="text-sm text-slate-500">Carregando avisos...</p>
+            </div>
+          ) : notices.length === 0 ? (
+            <div className="flex h-40 items-center justify-center rounded-xl border border-slate-800">
+              <p className="text-sm text-slate-500">Nenhum aviso encontrado.</p>
+            </div>
+          ) : (
+            notices.map((notice) => (
+              <AdminNoticeCard
+                key={notice.notice_id}
+                notice={notice}
+                selected={selectedNotice?.notice_id === notice.notice_id}
+                canEdit
+                onSelect={handleSelect}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onRestore={handleRestore}
+              />
+            ))
+          )}
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-slate-500">
-            Página {page} de {totalPages}
-          </p>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-xs text-slate-500">
+                Página {page} de {totalPages}
+              </p>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
-              disabled={page === 1}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setPage((current) => Math.max(1, current - 1))
+                  }
+                  disabled={page === 1}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                setPage((current) => Math.min(totalPages, current + 1))
-              }
-              disabled={page === totalPages}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setPage((current) => Math.min(totalPages, current + 1))
+                  }
+                  disabled={page === totalPages}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="xl:sticky xl:top-6 xl:self-start">
+          <div className="xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
+            <AdminNoticePreview
+              notice={selectedNotice}
+              canEdit
+              teacherNameById={teacherNameById}
+              onViewFull={handleViewFull}
+              onClosePreview={handleClosePreview}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onRestore={handleRestore}
+            />
           </div>
         </div>
-      )}
+      </div>
 
       <NoticeFormModal
         open={modalOpen}
         editing={editing}
         onClose={handleCloseModal}
+      />
+
+      <AdminNoticeDetailsModal
+        open={detailsOpen}
+        notice={selectedNotice}
+        teacherNameById={teacherNameById}
+        onClose={() => setDetailsOpen(false)}
       />
     </div>
   )

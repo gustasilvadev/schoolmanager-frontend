@@ -13,6 +13,7 @@ import type {
   CreateNoticePayload,
   ListNoticesParams,
   UpdateNoticePayload,
+  TeacherNotice,
 } from '@/types/notice'
 import { toast } from 'sonner'
 
@@ -125,6 +126,47 @@ export function useMarkAsViewed() {
     },
     onError: (error: Error) => {
       console.error('[useMarkAsViewed]', error.message)
+      toast.error(error.message || 'Erro ao marcar aviso como lido')
+    },
+  })
+}
+
+export function useMarkNoticeAsViewed() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: markAsViewed,
+
+    onSuccess: (_, noticeId) => {
+      queryClient.setQueriesData<TeacherNotice[]>(
+        { queryKey: ['notices', 'teacher'] },
+        (old) => {
+          if (!old) return old
+
+          return old.map((notice) =>
+            notice.notice_id === noticeId
+              ? {
+                  ...notice,
+                  viewed: true,
+                }
+              : notice,
+          )
+        },
+      )
+
+      void queryClient.invalidateQueries({
+        queryKey: ['notices', 'teacher'],
+      })
+
+      void queryClient.invalidateQueries({
+        queryKey: ['notices'],
+      })
+
+      toast.success('Aviso marcado como lido')
+    },
+
+    onError: (error: Error) => {
+      console.error('[useMarkNoticeAsViewed]', error.message)
       toast.error(error.message || 'Erro ao marcar aviso como lido')
     },
   })

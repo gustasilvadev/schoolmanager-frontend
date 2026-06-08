@@ -2,6 +2,7 @@ export interface AuthSession {
   role: 'ADMIN' | 'TEACHER'
   userId: number
   userEmail: string
+  teacherId?: number
 }
 
 export interface AuthContextValue {
