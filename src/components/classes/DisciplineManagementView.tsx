@@ -19,7 +19,7 @@ import {
 import type { Discipline } from '@/types/classes'
 
 interface DisciplineManagementViewProps {
-  onBack: () => void
+  onBack?: () => void
 }
 
 const LIMIT = 10
@@ -73,12 +73,14 @@ export function DisciplineManagementView({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          )}
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-600/10">
             <ClipboardList className="h-5 w-5 text-violet-400" />
           </div>

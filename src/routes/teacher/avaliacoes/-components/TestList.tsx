@@ -5,9 +5,10 @@ interface TestListProps {
   tests: Test[]
   isLoading: boolean
   onEdit: (test: Test) => void
+  classDisciplineMap?: Map<number, string>
 }
 
-export function TestList({ tests, isLoading, onEdit }: TestListProps) {
+export function TestList({ tests, isLoading, onEdit, classDisciplineMap }: TestListProps) {
   if (isLoading) {
     return (
       <div className="w-full space-y-4">
@@ -41,6 +42,9 @@ export function TestList({ tests, isLoading, onEdit }: TestListProps) {
             <th className="py-4 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Descrição
             </th>
+            <th className="py-4 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              Disciplina
+            </th>
             <th className="py-4 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">
               Ações
             </th>
@@ -54,8 +58,17 @@ export function TestList({ tests, isLoading, onEdit }: TestListProps) {
                   {test.test_type}
                 </span>
               </td>
-              <td className="py-4 px-4 text-sm text-slate-400 truncate max-w-[320px]">
+              <td className="py-4 px-4 text-sm text-slate-400 truncate max-w-[280px]">
                 {test.test_description || '—'}
+              </td>
+              <td className="py-4 px-4">
+                {classDisciplineMap?.get(test.class_discipline_id) ? (
+                  <span className="inline-flex items-center rounded-md bg-blue-600/10 px-2 py-0.5 text-xs font-medium text-blue-300 ring-1 ring-inset ring-blue-600/20">
+                    {classDisciplineMap.get(test.class_discipline_id)}
+                  </span>
+                ) : (
+                  <span className="text-xs text-slate-500">—</span>
+                )}
               </td>
               <td className="py-4 px-4 text-right">
                 <TestActions test={test} onEdit={onEdit} />
