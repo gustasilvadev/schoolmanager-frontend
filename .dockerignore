@@ -27,7 +27,6 @@ Thumbs.db
 # Environment
 .env
 .env.local
-.env.production
 
 # Cache
 .cache/
