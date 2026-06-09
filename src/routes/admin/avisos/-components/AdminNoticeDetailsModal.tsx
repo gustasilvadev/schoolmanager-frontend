@@ -128,9 +128,11 @@ export function AdminNoticeDetailsModal({
             <p className="text-sm font-medium text-white">Leitores</p>
 
             <p className="mt-1 text-sm text-slate-400">
-              {readers.total > 0
-                ? `${readers.read} de ${readers.total} professores visualizaram este aviso.`
-                : 'Ainda não há leitura registrada para este aviso.'}
+              {visibilities.length === 0
+                ? 'Aviso público — leitura não rastreada.'
+                : readers.read > 0
+                  ? `${readers.read} de ${readers.total} professores visualizaram este aviso.`
+                  : 'Nenhum professor visualizou este aviso ainda.'}
             </p>
           </div>
 

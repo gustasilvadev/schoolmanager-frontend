@@ -1,5 +1,9 @@
 import type { NoticeItem } from '@/types/notice'
 
+export function isPublicNotice(notice: Pick<NoticeItem, 'notice_visibilities'>): boolean {
+  return (notice.notice_visibilities?.length ?? 0) === 0
+}
+
 export function formatNoticeDate(value: string | null): string {
   if (!value) return '—'
 

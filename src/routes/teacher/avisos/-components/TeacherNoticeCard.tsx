@@ -1,8 +1,8 @@
-import { CheckCheck, ChevronDown, ChevronUp, Mail, MailOpen } from 'lucide-react'
+import { Bell, CheckCheck, ChevronDown, ChevronUp, Mail, MailOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { NoticePriorityBadge } from '@/components/shared/NoticePriorityBadge'
 import { cn } from '@/lib/utils'
-import { formatNoticeDate } from '@/utils/noticeFormatters'
+import { formatNoticeDate, isPublicNotice } from '@/utils/noticeFormatters'
 import type { TeacherNotice } from '@/types/notice'
 
 interface TeacherNoticeCardProps {
@@ -20,13 +20,14 @@ export function TeacherNoticeCard({
   onToggle,
   onMarkAsViewed,
 }: TeacherNoticeCardProps) {
+  const isPublic = isPublicNotice(notice)
+  const isUnread = !isPublic && !notice.viewed
+
   return (
     <article
       className={cn(
         'rounded-2xl border bg-slate-900/60 transition',
-        notice.viewed
-          ? 'border-slate-800'
-          : 'border-blue-500/40 bg-blue-500/5',
+        isUnread ? 'border-blue-500/40 bg-blue-500/5' : 'border-slate-800',
       )}
     >
       <button
@@ -38,10 +39,12 @@ export function TeacherNoticeCard({
           <div
             className={cn(
               'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-              notice.viewed ? 'bg-slate-800' : 'bg-blue-600/10',
+              isUnread ? 'bg-blue-600/10' : 'bg-slate-800',
             )}
           >
-            {notice.viewed ? (
+            {isPublic ? (
+              <Bell className="h-4 w-4 text-slate-400" />
+            ) : notice.viewed ? (
               <MailOpen className="h-4 w-4 text-slate-400" />
             ) : (
               <Mail className="h-4 w-4 text-blue-400" />
@@ -50,7 +53,7 @@ export function TeacherNoticeCard({
 
           <div className="min-w-0">
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              {!notice.viewed && (
+              {isUnread && (
                 <span className="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
                   Não lido
                 </span>
@@ -90,7 +93,7 @@ export function TeacherNoticeCard({
             {notice.notice_content}
           </p>
 
-          {!notice.viewed && (
+          {isUnread && (
             <div className="mt-4 flex justify-end">
               <Button
                 type="button"

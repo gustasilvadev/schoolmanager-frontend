@@ -20,7 +20,7 @@ interface AdminNoticeCardProps {
 function getReadersLabel(notice: NoticeItem) {
   const visibilities = notice.notice_visibilities ?? []
 
-  if (visibilities.length === 0) return '0 leitores'
+  if (visibilities.length === 0) return 'Visível a todos'
 
   const read = visibilities.filter((visibility) =>
     Boolean(visibility.notice_visibility_viewed_in),

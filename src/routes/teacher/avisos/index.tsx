@@ -7,6 +7,7 @@ import {
   useMarkNoticeAsViewed,
   useTeacherNotices,
 } from '@/hooks/useNotices'
+import { isPublicNotice } from '@/utils/noticeFormatters'
 import { TeacherNoticeCard } from './-components/TeacherNoticeCard'
 import type { TeacherNotice } from '@/types/notice'
 
@@ -39,16 +40,17 @@ function TeacherAvisosPage() {
         notice.notice_title.toLowerCase().includes(normalizedSearch) ||
         notice.notice_content.toLowerCase().includes(normalizedSearch)
 
+      const isPublic = isPublicNotice(notice)
       const matchesFilter =
         filter === 'all' ||
-        (filter === 'unread' && !notice.viewed) ||
-        (filter === 'read' && notice.viewed)
+        (filter === 'unread' && !isPublic && !notice.viewed) ||
+        (filter === 'read' && !isPublic && notice.viewed)
 
       return matchesSearch && matchesFilter
     })
   }, [notices, search, filter])
 
-  const unreadCount = notices.filter((notice) => !notice.viewed).length
+  const unreadCount = notices.filter((notice) => !isPublicNotice(notice) && !notice.viewed).length
 
   useEffect(() => {
     if (isError) toast.error('Erro ao carregar avisos')
