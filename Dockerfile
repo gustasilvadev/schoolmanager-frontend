@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -8,10 +8,10 @@ RUN npm run build
 FROM node:20-alpine
 WORKDIR /app
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package.json /app/package.json
 
 EXPOSE 9518
 
-CMD ["node", "node_modules/.bin/srvx", "--static", "dist/client", "dist/server/server.js"]
+CMD ["node_modules/.bin/srvx", "--static", "dist/client", "dist/server/server.js"]

@@ -1,22 +1,24 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
+        stage('Verificar Repositório') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], useRemoteConfigs: [[url: 'https://github.com/Gustasilvadev/schoolManager-frontend']]])
             }
         }
 
-        stage('Docker Build') {
+        stage('Construir Imagem Docker') {
             steps {
                 script {
-                    def imageTag = "schoolmanager-frontend:${env.BUILD_ID}"
+                    def appName = 'schoolmanager-frontend'
+                    def imageTag = "${appName}:${env.BUILD_ID}"
+
                     sh "docker build -t ${imageTag} ."
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Fazer Deploy') {
             steps {
                 script {
                     def appName = 'schoolmanager-frontend'

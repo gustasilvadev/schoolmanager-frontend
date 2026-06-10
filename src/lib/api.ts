@@ -27,8 +27,7 @@ export function create(service: string) {
 
         if (error.response?.status === 401) {
           clearSession()
-          const base = (import.meta.env.VITE_APP_BASE || '/').replace(/\/$/, '')
-          window.location.href = `${base}/login/`
+          window.location.href = import.meta.env.VITE_APP_BASE + 'login'
         }
 
         const message = error.response?.data?.error ?? error.message
