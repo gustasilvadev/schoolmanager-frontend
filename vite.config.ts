@@ -1,29 +1,21 @@
 import { defineConfig, loadEnv } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
-
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  // API Gateway: todas as chamadas /api/<service>/<rota> são encaminhadas para
-  // <API_PROXY_BASE>/api/<service>/<rota>.
-  // O gateway resolve o roteamento por <service>; o front não conhece os MS direto.
-  const proxy = env.API_PROXY_BASE
-    ? (() => {
-        const gateway = new URL(env.API_PROXY_BASE)
-        const base = gateway.pathname.replace(/\/$/, '')
-        return {
-          '/api': {
-            target: gateway.origin,
-            changeOrigin: true,
-            rewrite: (path: string) => `${base}${path}`,
-          },
-        }
-      })()
+  // Configuração de Proxy dinâmica
+  // Em desenvolvimento, o Vite intercepta as chamadas para a API e repassa para o servidor remoto
+  const proxy = env.API_PROXY_BASE && env.VITE_API_BASE
+    ? {
+        [env.VITE_API_BASE]: {
+          target: env.API_PROXY_BASE,
+          changeOrigin: true,
+        },
+      }
     : undefined
 
   return {
@@ -31,7 +23,7 @@ export default defineConfig(({ mode }) => {
     resolve: { tsconfigPaths: true },
     plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
     server: {
-      port: 9518,
+      port: Number(env.PORT) || 9518,
       host: true,
       ...(proxy ? { proxy } : {}),
     },

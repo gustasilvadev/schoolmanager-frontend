@@ -10,6 +10,7 @@ export function getRouter() {
   const router = createTanStackRouter({
     routeTree,
     context,
+    basepath: (import.meta.env.VITE_APP_BASE || '/').replace(/\/$/, ''),
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
