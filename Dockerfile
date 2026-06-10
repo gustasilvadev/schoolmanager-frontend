@@ -8,10 +8,13 @@ RUN npm run build
 FROM node:20-alpine
 WORKDIR /app
 
+# Instala um servidor estático simples para servir o SPA
+RUN npm install -g serve
+
+# Copia apenas o build estático do estágio anterior
 COPY --from=build /app/dist /app/dist
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/package.json /app/package.json
 
 EXPOSE 9518
 
-CMD ["node_modules/.bin/srvx", "--static", "dist/client", "dist/server/server.js"]
+# Serve a pasta dist na porta 9518, tratando roteamento de SPA (-s)
+CMD ["serve", "-s", "dist", "-l", "9518"]
