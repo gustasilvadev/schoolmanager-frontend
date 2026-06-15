@@ -6,6 +6,8 @@ import { TestList } from './-components/TestList'
 import { TestFormModal } from '@/components/tests/TestFormModal'
 import { useTests } from '@/hooks/useTests'
 import { useClassDisciplines } from '@/hooks/useClassDisciplines'
+import { useTeacherClassDisciplineIds } from '@/hooks/useTeacherClassDisciplineIds'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
 import { Plus } from 'lucide-react'
 import type { Test } from '@/types/test'
@@ -28,13 +30,17 @@ export const Route = createFileRoute('/teacher/avaliacoes/')({
 })
 
 function AvaliacoesPage() {
+  const { session } = useAuth()
   const { classId, classDisciplineId } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTest, setEditingTest] = useState<Test | undefined>()
 
-  const { data: allTestsData, isLoading } = useTests({
+  const { classDisciplineIds: teacherCdIds, isLoading: isLoadingTeacherCds } =
+    useTeacherClassDisciplineIds(session?.teacherId)
+
+  const { data: allTestsData, isLoading: isLoadingTests } = useTests({
     class_discipline_id: classDisciplineId,
   })
 
@@ -52,13 +58,26 @@ function AvaliacoesPage() {
   }, [classDisciplinesData])
 
   const tests = useMemo(() => {
+    if (isLoadingTeacherCds) return []
+
     const all = allTestsData?.tests ?? []
+
+    // Base filter: only tests for the teacher's own disciplines
+    let filtered =
+      teacherCdIds.size > 0
+        ? all.filter((t) => teacherCdIds.has(t.class_discipline_id))
+        : []
+
+    // Secondary filter: narrow by selected class when no specific discipline chosen
     if (classId && !classDisciplineId && classDisciplinesData) {
       const validIds = new Set(classDisciplinesData.map((e) => e.class_discipline_id))
-      return all.filter((t) => validIds.has(t.class_discipline_id))
+      filtered = filtered.filter((t) => validIds.has(t.class_discipline_id))
     }
-    return all
-  }, [allTestsData, classId, classDisciplineId, classDisciplinesData])
+
+    return filtered
+  }, [allTestsData, classId, classDisciplineId, classDisciplinesData, teacherCdIds, isLoadingTeacherCds])
+
+  const isLoading = isLoadingTests || isLoadingTeacherCds
 
   const handleClassChange = (id?: number) => {
     navigate({

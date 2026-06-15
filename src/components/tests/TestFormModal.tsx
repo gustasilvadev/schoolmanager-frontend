@@ -9,13 +9,13 @@ import { useCreateTest, useUpdateTest } from '@/hooks/useCreateUpdateTest'
 import { useClasses } from '@/hooks/useClasses'
 import { useClassDisciplines } from '@/hooks/useClassDisciplines'
 import { useEffect } from 'react'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Lock } from 'lucide-react'
 
 const testSchema = z.object({
   test_type: z.string().min(1, 'Obrigatório').max(45, 'Máximo 45 caracteres'),
   test_description: z.string().min(1, 'Obrigatório').max(45, 'Máximo 45 caracteres'),
-  class_id: z.string().min(1, 'Selecione uma turma'),
-  class_discipline_id: z.string().min(1, 'Selecione uma disciplina'),
+  class_id: z.string().optional().default(''),
+  class_discipline_id: z.string().optional().default(''),
 })
 
 type TestFormData = z.infer<typeof testSchema>
@@ -36,6 +36,7 @@ export function TestFormModal({ open, onClose, test }: TestFormModalProps) {
     handleSubmit,
     watch,
     reset,
+    setError,
     formState: { errors },
   } = useForm<TestFormData>({
     resolver: zodResolver(testSchema),
@@ -64,21 +65,34 @@ export function TestFormModal({ open, onClose, test }: TestFormModalProps) {
   }, [open, test, reset])
 
   const onSubmit = (data: TestFormData) => {
-    const payload = {
-      test_type: data.test_type,
-      test_description: data.test_description,
-      class_discipline_id: parseInt(data.class_discipline_id, 10),
-    }
+    if (!isEditing) {
+      let hasError = false
+      if (!data.class_id) {
+        setError('class_id', { message: 'Selecione uma turma' })
+        hasError = true
+      }
+      if (!data.class_discipline_id) {
+        setError('class_discipline_id', { message: 'Selecione uma disciplina' })
+        hasError = true
+      }
+      if (hasError) return
 
-    if (isEditing && test) {
-      updateTest(
-        { id: test.test_id, data: payload },
+      createTest(
+        {
+          test_type: data.test_type,
+          test_description: data.test_description,
+          class_discipline_id: parseInt(data.class_discipline_id!, 10),
+        },
         { onSuccess: () => { onClose(); reset() } },
       )
-    } else {
-      createTest(payload, {
-        onSuccess: () => { onClose(); reset() },
-      })
+    } else if (test) {
+      updateTest(
+        {
+          id: test.test_id,
+          data: { test_type: data.test_type, test_description: data.test_description },
+        },
+        { onSuccess: () => { onClose(); reset() } },
+      )
     }
   }
 
@@ -111,42 +125,51 @@ export function TestFormModal({ open, onClose, test }: TestFormModalProps) {
           error={errors.test_description?.message}
         />
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-300">Turma *</label>
-          <select
-            {...register('class_id')}
-            className="w-full h-11 bg-slate-800 border border-slate-700 rounded-lg px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Selecione uma turma</option>
-            {classesData?.classes.map((cls) => (
-              <option key={cls.class_id} value={cls.class_id}>
-                {cls.class_name}
-              </option>
-            ))}
-          </select>
-          {errors.class_id && (
-            <span className="text-xs text-red-500">{errors.class_id.message}</span>
-          )}
-        </div>
+        {isEditing ? (
+          <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2.5 text-slate-400 text-xs">
+            <Lock className="h-3.5 w-3.5 shrink-0" />
+            <span>Turma e disciplina não podem ser alteradas após a criação.</span>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-300">Turma *</label>
+              <select
+                {...register('class_id')}
+                className="w-full h-11 bg-slate-800 border border-slate-700 rounded-lg px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Selecione uma turma</option>
+                {classesData?.classes.map((cls) => (
+                  <option key={cls.class_id} value={cls.class_id}>
+                    {cls.class_name}
+                  </option>
+                ))}
+              </select>
+              {errors.class_id && (
+                <span className="text-xs text-red-500">{errors.class_id.message}</span>
+              )}
+            </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-300">Disciplina *</label>
-          <select
-            {...register('class_discipline_id')}
-            disabled={!selectedClassId}
-            className="w-full h-11 bg-slate-800 border border-slate-700 rounded-lg px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            <option value="">Selecione uma disciplina</option>
-            {disciplinesData?.map((entry) => (
-              <option key={entry.class_discipline_id} value={entry.class_discipline_id}>
-                {entry.disciplines?.discipline_name}
-              </option>
-            ))}
-          </select>
-          {errors.class_discipline_id && (
-            <span className="text-xs text-red-500">{errors.class_discipline_id.message}</span>
-          )}
-        </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-300">Disciplina *</label>
+              <select
+                {...register('class_discipline_id')}
+                disabled={!selectedClassId}
+                className="w-full h-11 bg-slate-800 border border-slate-700 rounded-lg px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <option value="">Selecione uma disciplina</option>
+                {disciplinesData?.map((entry) => (
+                  <option key={entry.class_discipline_id} value={entry.class_discipline_id}>
+                    {entry.disciplines?.discipline_name}
+                  </option>
+                ))}
+              </select>
+              {errors.class_discipline_id && (
+                <span className="text-xs text-red-500">{errors.class_discipline_id.message}</span>
+              )}
+            </div>
+          </>
+        )}
 
         <div className="flex justify-end gap-3 pt-4">
           <Button
