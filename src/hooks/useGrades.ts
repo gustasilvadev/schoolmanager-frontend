@@ -16,8 +16,7 @@ export function useBulkCreateGrades() {
 
   return useMutation({
     mutationFn: gradesApi.bulkCreateGrades,
-    onSuccess: (data) => {
-      toast.success(data.message || `${data.count} nota(s) salva(s) com sucesso`)
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['grades'] })
     },
     onError: (error: Error) => {

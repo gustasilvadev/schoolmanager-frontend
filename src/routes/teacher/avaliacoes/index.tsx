@@ -1,10 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { z } from 'zod'
-import { ClassDisciplineFilter } from './-components/ClassDisciplineFilter'
+import { ClassDisciplineFilter } from '@/components/classes/ClassDisciplineFilter'
 import { TestList } from './-components/TestList'
 import { TestFormModal } from '@/components/tests/TestFormModal'
 import { useTests } from '@/hooks/useTests'
+import { useClassDisciplines } from '@/hooks/useClassDisciplines'
+import { useTeacherClassDisciplineIds } from '@/hooks/useTeacherClassDisciplineIds'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
 import { Plus } from 'lucide-react'
 import type { Test } from '@/types/test'
@@ -27,15 +30,54 @@ export const Route = createFileRoute('/teacher/avaliacoes/')({
 })
 
 function AvaliacoesPage() {
+  const { session } = useAuth()
   const { classId, classDisciplineId } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTest, setEditingTest] = useState<Test | undefined>()
 
-  const { data: allTestsData, isLoading } = useTests({
+  const { classDisciplineIds: teacherCdIds, isLoading: isLoadingTeacherCds } =
+    useTeacherClassDisciplineIds(session?.teacherId)
+
+  const { data: allTestsData, isLoading: isLoadingTests } = useTests({
     class_discipline_id: classDisciplineId,
   })
+
+  const { data: classDisciplinesData } = useClassDisciplines(classId || 0)
+
+  const classDisciplineMap = useMemo(() => {
+    const map = new Map<number, string>()
+    classDisciplinesData?.forEach((entry) => {
+      map.set(
+        entry.class_discipline_id,
+        entry.disciplines?.discipline_name ?? `#${entry.class_discipline_id}`,
+      )
+    })
+    return map
+  }, [classDisciplinesData])
+
+  const tests = useMemo(() => {
+    if (isLoadingTeacherCds) return []
+
+    const all = allTestsData?.tests ?? []
+
+    // Base filter: only tests for the teacher's own disciplines
+    let filtered =
+      teacherCdIds.size > 0
+        ? all.filter((t) => teacherCdIds.has(t.class_discipline_id))
+        : []
+
+    // Secondary filter: narrow by selected class when no specific discipline chosen
+    if (classId && !classDisciplineId && classDisciplinesData) {
+      const validIds = new Set(classDisciplinesData.map((e) => e.class_discipline_id))
+      filtered = filtered.filter((t) => validIds.has(t.class_discipline_id))
+    }
+
+    return filtered
+  }, [allTestsData, classId, classDisciplineId, classDisciplinesData, teacherCdIds, isLoadingTeacherCds])
+
+  const isLoading = isLoadingTests || isLoadingTeacherCds
 
   const handleClassChange = (id?: number) => {
     navigate({
@@ -61,8 +103,6 @@ function AvaliacoesPage() {
     setIsModalOpen(false)
     setEditingTest(undefined)
   }
-
-  const tests = allTestsData?.tests ?? []
 
   return (
     <div className="p-6 space-y-8">
@@ -90,7 +130,12 @@ function AvaliacoesPage() {
       </div>
 
       <div className="bg-slate-900/30 rounded-2xl border border-slate-800 overflow-hidden">
-        <TestList tests={tests} isLoading={isLoading} onEdit={handleEdit} />
+        <TestList
+          tests={tests}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          classDisciplineMap={classDisciplineMap}
+        />
       </div>
 
       <TestFormModal open={isModalOpen} onClose={handleCloseModal} test={editingTest} />
