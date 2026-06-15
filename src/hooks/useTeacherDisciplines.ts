@@ -4,7 +4,53 @@ import {
   getTeacherDisciplines,
   associateDiscipline,
   removeDisciplineAssociation,
+  listTeachers,
 } from '@/integrations/teachers/teachersApi'
+import { getDisciplineById } from '@/integrations/classes/disciplinesApi'
+import type { Teacher } from '@/types/teacher'
+
+export interface TeacherWithDisciplineCount {
+  teacher: Teacher
+  count: number
+}
+
+export function useTopTeachersByDisciplines(limit = 3) {
+  return useQuery({
+    queryKey: ['top-teachers-by-disciplines', limit],
+    queryFn: async () => {
+      const { teachers } = await listTeachers({ limit: 100 })
+      const results = await Promise.all(
+        teachers.map(async (teacher) => {
+          try {
+            const disc = await getTeacherDisciplines(teacher.teacher_id)
+            return { teacher, count: disc.discipline_ids.length }
+          } catch {
+            return { teacher, count: 0 }
+          }
+        }),
+      )
+      return results.sort((a, b) => b.count - a.count).slice(0, limit)
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useTeacherDisciplineDetails(
+  teacherId: number,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: ['teacher-discipline-details', teacherId],
+    queryFn: async () => {
+      const { discipline_ids } = await getTeacherDisciplines(teacherId)
+      if (discipline_ids.length === 0) return []
+      return Promise.all(discipline_ids.map((id) => getDisciplineById(id)))
+    },
+    enabled: (options?.enabled ?? true) && teacherId > 0,
+    staleTime: 3 * 60 * 1000,
+    retry: false,
+  })
+}
 
 export function useTeacherDisciplines(
   teacherId: number,

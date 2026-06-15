@@ -5,6 +5,7 @@ import type {
   ListTeachersParams,
   ListTeachersResponse,
   UpdateTeacher,
+  RestoreTeacher,
 } from '@/types/teacher'
 
 const api = create('teachers')
@@ -72,4 +73,13 @@ export async function removeDisciplineAssociation(
   disciplineId: number,
 ): Promise<void> {
   await api.delete(`/unlinkDiscipline/${teacherId}/${disciplineId}`)
+}
+
+export async function deleteTeacher(id: number): Promise<void> {
+  await api.delete(`/deleteTeacherById/${id}`)
+}
+
+export async function restoreTeacher(id: number): Promise<RestoreTeacher> {
+  const { data } = await api.post<RestoreTeacher>(`/restoreTeacherById/${id}`)
+  return data
 }

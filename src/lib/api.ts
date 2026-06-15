@@ -27,12 +27,16 @@ export function create(service: string) {
 
         if (error.response?.status === 401) {
           clearSession()
-          window.location.href = '/login'
+          window.location.href = import.meta.env.VITE_APP_BASE + 'login'
         }
 
         const message = error.response?.data?.error ?? error.message
-        return Promise.reject(new Error(message))
+        const apiError = Object.assign(new Error(message), {
+          status: error.response?.status,
+        })
+        return Promise.reject(apiError)
       }
+
       return Promise.reject(new Error(String(error)))
     },
   )

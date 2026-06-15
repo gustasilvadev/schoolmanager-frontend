@@ -3,6 +3,8 @@ import {
   listTeachers,
   getTeacherById,
   updateTeacherById,
+  deleteTeacher,
+  restoreTeacher,
 } from '@/integrations/teachers/teachersApi'
 import { createUser } from '@/integrations/users/usersApi'
 import type { ListTeachersParams, UpdateTeacher } from '@/types/teacher'
@@ -53,6 +55,34 @@ export function useCreateTeacher() {
     },
     onError: (error) => {
       console.error('[useCreateTeacher]', error)
+    },
+  })
+}
+
+export function useDeleteTeacher() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => deleteTeacher(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['teachers'] })
+      queryClient.invalidateQueries({ queryKey: ['teacher', id] })
+    },
+    onError: (error) => {
+      console.error('[useDeleteTeacher]', error)
+    },
+  })
+}
+
+export function useRestoreTeacher() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => restoreTeacher(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['teachers'] })
+      queryClient.invalidateQueries({ queryKey: ['teacher', id] })
+    },
+    onError: (error) => {
+      console.error('[useRestoreTeacher]', error)
     },
   })
 }

@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTests } from '@/hooks/useTests'
+import { useClassDisciplines } from '@/hooks/useClassDisciplines'
 import { TestFormModal } from '@/components/tests/TestFormModal'
 import { AdminTestList } from './-components/AdminTestList'
-import { ClassDisciplineFilter } from '@/routes/teacher/avaliacoes/-components/ClassDisciplineFilter'
+import { ClassDisciplineFilter } from '@/components/classes/ClassDisciplineFilter'
 import { Button } from '@/components/ui/Button'
 import { Plus } from 'lucide-react'
 import type { Test, StatusValue } from '@/types/test'
@@ -38,6 +39,28 @@ function AdminAvaliacoesPage() {
     test_status: STATUS_MAP[status],
   })
 
+  const { data: classDisciplinesData } = useClassDisciplines(classId || 0)
+
+  const classDisciplineMap = useMemo(() => {
+    const map = new Map<number, string>()
+    classDisciplinesData?.forEach((entry) => {
+      map.set(
+        entry.class_discipline_id,
+        entry.disciplines?.discipline_name ?? `#${entry.class_discipline_id}`,
+      )
+    })
+    return map
+  }, [classDisciplinesData])
+
+  const tests = useMemo(() => {
+    const all = testsData?.tests ?? []
+    if (classId && !classDisciplineId && classDisciplinesData) {
+      const validIds = new Set(classDisciplinesData.map((e) => e.class_discipline_id))
+      return all.filter((t) => validIds.has(t.class_discipline_id))
+    }
+    return all
+  }, [testsData, classId, classDisciplineId, classDisciplinesData])
+
   const handleClassChange = (id?: number) => {
     navigate({
       search: (prev) => ({ ...prev, classId: id, classDisciplineId: undefined }),
@@ -66,8 +89,6 @@ function AdminAvaliacoesPage() {
     setIsModalOpen(false)
     setEditingTest(undefined)
   }
-
-  const tests = testsData?.tests ?? []
 
   return (
     <div className="p-6 space-y-8">
@@ -117,7 +138,12 @@ function AdminAvaliacoesPage() {
       </div>
 
       <div className="bg-slate-900/30 rounded-2xl border border-slate-800 overflow-hidden">
-        <AdminTestList tests={tests} isLoading={isLoading} onEdit={handleEdit} />
+        <AdminTestList
+          tests={tests}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          classDisciplineMap={classDisciplineMap}
+        />
       </div>
 
       <TestFormModal open={isModalOpen} onClose={handleCloseModal} test={editingTest} />

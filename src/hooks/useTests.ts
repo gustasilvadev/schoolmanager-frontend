@@ -45,6 +45,7 @@ export function useDeleteTest() {
       queryClient.invalidateQueries({ queryKey: ['tests'] })
     },
     onError: (error: Error) => {
+      console.error('[useDeleteTest] deleteTest error:', error)
       toast.error(error.message || 'Erro ao remover avaliação')
     },
   })
@@ -60,6 +61,7 @@ export function useRestoreTest() {
       queryClient.invalidateQueries({ queryKey: ['tests'] })
     },
     onError: (error: Error) => {
+      console.error('[useRestoreTest] restoreTest error:', error)
       toast.error(error.message || 'Erro ao restaurar avaliação')
     },
   })

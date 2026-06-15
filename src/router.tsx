@@ -1,7 +1,6 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
-import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import { getContext } from './integrations/tanstack-query/root-provider'
 
 export function getRouter() {
@@ -10,13 +9,12 @@ export function getRouter() {
   const router = createTanStackRouter({
     routeTree,
     context,
+    basepath: import.meta.env.VITE_APP_BASE || '/',
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
     defaultNotFoundComponent: () => <p>Página não encontrada</p>,
   })
-
-  setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient })
 
   return router
 }

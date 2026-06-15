@@ -21,6 +21,7 @@ export function useCalculateFinalAverage() {
       queryClient.invalidateQueries({ queryKey: ['final-averages', 'byStudent', studentId] })
     },
     onError: (error: Error) => {
+      console.error('[useCalculateFinalAverage] calculateFinalAverage error:', error)
       toast.error(error.message || 'Erro ao calcular média')
     },
   })

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { listGradesByStudent } from '@/integrations/grades/gradesApi'
-import { useStudentFinalAverages } from '@/hooks/useFinalAverages'
+import { useStudentFinalAverages, useCalculateFinalAverage } from '@/hooks/useFinalAverages'
 import { DisciplineGradeCard } from './DisciplineGradeCard'
 import type { GradeWithTest } from '@/types/grade'
 import { Loader2, User } from 'lucide-react'
@@ -25,6 +25,7 @@ export function StudentReportCard({
   })
 
   const { data: averages, isLoading: isLoadingAverages } = useStudentFinalAverages(studentId)
+  const { mutate: calculateAverage } = useCalculateFinalAverage()
 
   if (isLoadingGrades || isLoadingAverages) {
     return (
@@ -71,7 +72,7 @@ export function StudentReportCard({
             )}
             canCalculate={canCalculate}
             onCalculate={(classDiscId) => {
-              console.log('Calcular média para:', classDiscId)
+              calculateAverage({ studentId, classDisciplineId: classDiscId })
             }}
           />
         ))}

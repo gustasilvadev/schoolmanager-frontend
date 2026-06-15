@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, GraduationCap, Search, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTeachers } from '@/hooks/useTeachers'
+import { useTeachers, useDeleteTeacher, useRestoreTeacher } from '@/hooks/useTeachers'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { TeacherTable } from './-components/TeacherTable'
 import { TeacherViewModal } from './-components/TeacherViewModal'
@@ -25,6 +26,11 @@ function ProfessoresPage() {
   const [viewingTeacher, setViewingTeacher] = useState<Teacher | null>(null)
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
   const [disciplinesTeacher, setDisciplinesTeacher] = useState<Teacher | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<Teacher | null>(null)
+  const [pendingRestore, setPendingRestore] = useState<Teacher | null>(null)
+
+  const { mutateAsync: deleteTeacher, isPending: isDeleting } = useDeleteTeacher()
+  const { mutateAsync: restoreTeacher, isPending: isRestoring } = useRestoreTeacher()
 
   const { data, isLoading, isError } = useTeachers({
     page,
@@ -56,11 +62,33 @@ function ProfessoresPage() {
   }
 
   function handleDelete(teacher: Teacher) {
-    toast.info(`Excluir: ${teacher.teacher_name}`)
+    setPendingDelete(teacher)
   }
 
   function handleRestore(teacher: Teacher) {
-    toast.info(`Restaurar: ${teacher.teacher_name}`)
+    setPendingRestore(teacher)
+  }
+
+  async function handleConfirmDelete() {
+    if (!pendingDelete) return
+    try {
+      await deleteTeacher(pendingDelete.teacher_id)
+      toast.success('Professor excluído com sucesso')
+      setPendingDelete(null)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao excluir professor')
+    }
+  }
+
+  async function handleConfirmRestore() {
+    if (!pendingRestore) return
+    try {
+      const { message } = await restoreTeacher(pendingRestore.teacher_id)
+      toast.success(message)
+      setPendingRestore(null)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao restaurar professor')
+    }
   }
 
   function handleDisciplines(teacher: Teacher) {
@@ -184,6 +212,27 @@ function ProfessoresPage() {
       <TeacherCreateModal
         open={isCreating}
         onClose={() => setIsCreating(false)}
+      />
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Excluir Professor"
+        description={`Deseja excluir o professor "${pendingDelete?.teacher_name}"?\nO registro do professor será removido, mas a conta de login (usuário no sistema) permanecerá ativa.`}
+        confirmLabel="Excluir"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setPendingDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={pendingRestore !== null}
+        title="Restaurar Professor"
+        description={`Deseja restaurar o professor "${pendingRestore?.teacher_name}"?\nO registro voltará a ficar ativo no sistema.`}
+        confirmLabel="Restaurar"
+        isLoading={isRestoring}
+        onConfirm={handleConfirmRestore}
+        onClose={() => setPendingRestore(null)}
       />
     </>
   )

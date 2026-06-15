@@ -13,6 +13,7 @@ export function useCreateTest() {
       queryClient.invalidateQueries({ queryKey: ['tests'] })
     },
     onError: (error: Error) => {
+      console.error('[useCreateTest] createTest error:', error)
       toast.error(error.message || 'Erro ao criar avaliação')
     },
   })
@@ -29,6 +30,7 @@ export function useUpdateTest() {
       queryClient.invalidateQueries({ queryKey: ['tests'] })
     },
     onError: (error: Error) => {
+      console.error('[useUpdateTest] updateTest error:', error)
       toast.error(error.message || 'Erro ao atualizar avaliação')
     },
   })

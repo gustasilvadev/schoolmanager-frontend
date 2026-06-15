@@ -33,3 +33,8 @@ export interface UpdateTeacher {
   teacher_cpf?: string
   teacher_email?: string
 }
+
+export interface RestoreTeacher {
+  message: string
+  teacher: Teacher
+}

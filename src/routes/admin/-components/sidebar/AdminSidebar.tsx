@@ -63,7 +63,7 @@ export function AdminSidebar() {
         <button
           onClick={handleLogout}
           className={cn(
-            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
+            'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
             'text-slate-400 hover:bg-red-600/20 hover:text-red-400',
           )}
         >
