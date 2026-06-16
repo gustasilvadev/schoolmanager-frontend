@@ -13,6 +13,7 @@ export function useTests(params?: {
   return useQuery({
     queryKey: ['tests', 'list', params],
     queryFn: () => testsApi.listTests(params),
+    staleTime: 3 * 60 * 1000,
   })
 }
 
@@ -20,6 +21,7 @@ export function useTest(id: number) {
   return useQuery({
     queryKey: ['tests', 'detail', id],
     queryFn: () => testsApi.getTestById(id),
+    staleTime: 3 * 60 * 1000,
     enabled: id > 0,
   })
 }
@@ -31,6 +33,7 @@ export function useTestsByClassDiscipline(classDisciplineId?: number) {
       classDisciplineId
         ? testsApi.listByClassDiscipline(classDisciplineId)
         : Promise.resolve([]),
+    staleTime: 3 * 60 * 1000,
     enabled: !!classDisciplineId,
   })
 }

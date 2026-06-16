@@ -6,6 +6,7 @@ export function useStudentFinalAverages(studentId: string) {
   return useQuery({
     queryKey: ['final-averages', 'byStudent', studentId],
     queryFn: () => finalAveragesApi.listFinalAveragesByStudent(studentId),
+    staleTime: 3 * 60 * 1000,
     enabled: !!studentId,
   })
 }

@@ -7,6 +7,7 @@ export function useGradesByTest(testId: number) {
   return useQuery({
     queryKey: ['grades', 'byTest', testId],
     queryFn: () => gradesApi.listGradesByTest(testId),
+    staleTime: 3 * 60 * 1000,
     enabled: testId > 0,
   })
 }
