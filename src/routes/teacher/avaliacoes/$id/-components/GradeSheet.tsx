@@ -1,6 +1,6 @@
 import { GradeCell } from './GradeCell'
 import { Button } from '@/components/ui/Button'
-import { Save, AlertCircle, Loader2, Users } from 'lucide-react'
+import { Save, AlertCircle, Calculator, Loader2, Users } from 'lucide-react'
 import { useGradeSheetSave } from '@/hooks/useGradeSheetSave'
 import type { GradeSheetStudent } from '@/types/student'
 import type { Grade } from '@/types/grade'
@@ -9,14 +9,23 @@ interface GradeSheetProps {
   testId: number
   students: GradeSheetStudent[]
   existingGrades: Grade[]
+  classDisciplineId?: number
 }
 
-export function GradeSheet({ testId, students, existingGrades }: GradeSheetProps) {
-  const { formState, handleRowChange, handleSaveAll, isSaving } = useGradeSheetSave(
-    testId,
-    students,
-    existingGrades,
-  )
+export function GradeSheet({
+  testId,
+  students,
+  existingGrades,
+  classDisciplineId,
+}: GradeSheetProps) {
+  const {
+    formState,
+    handleRowChange,
+    handleSaveAll,
+    handleRecalculateAll,
+    isSaving,
+    isCalculating,
+  } = useGradeSheetSave(testId, students, existingGrades, classDisciplineId)
 
   return (
     <div className="space-y-6">
@@ -27,10 +36,26 @@ export function GradeSheet({ testId, students, existingGrades }: GradeSheetProps
             Use vírgula para decimais (ex: 8,5). Notas devem estar entre 0 e 10.
           </p>
         </div>
-        <Button onClick={handleSaveAll} disabled={isSaving} className="flex items-center gap-2 min-w-[140px]">
-          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          Salvar tudo
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            onClick={handleRecalculateAll}
+            disabled={isSaving || isCalculating || students.length === 0}
+            className="flex items-center gap-2"
+            title="Recalcular as médias finais a partir das notas atuais"
+          >
+            {isCalculating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Calculator className="w-4 h-4" />
+            )}
+            Recalcular médias
+          </Button>
+          <Button onClick={handleSaveAll} disabled={isSaving} className="flex items-center gap-2 min-w-[140px]">
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Salvar tudo
+          </Button>
+        </div>
       </div>
 
       {students.length === 0 ? (
@@ -76,7 +101,21 @@ export function GradeSheet({ testId, students, existingGrades }: GradeSheetProps
       )}
 
       {students.length > 0 && (
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end gap-2 pt-4">
+          <Button
+            variant="ghost"
+            onClick={handleRecalculateAll}
+            disabled={isSaving || isCalculating || students.length === 0}
+            className="flex items-center gap-2"
+            title="Recalcular as médias finais a partir das notas atuais"
+          >
+            {isCalculating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Calculator className="w-4 h-4" />
+            )}
+            Recalcular médias
+          </Button>
           <Button onClick={handleSaveAll} disabled={isSaving} className="flex items-center gap-2 min-w-[140px]">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Salvar tudo
