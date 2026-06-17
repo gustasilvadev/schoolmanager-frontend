@@ -26,7 +26,7 @@ export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
     data: allStudentsData,
     isLoading: loadingStudents,
     isError: studentsError,
-  } = useStudents({ limit: 500, includeDeleted: true })
+  } = useStudents({ limit: 500, includeDeleted: true }, { enabled: canEdit })
 
   const studentMap = useMemo(() => {
     const map = new Map<number, { name: string; email: string }>()
