@@ -29,6 +29,7 @@ function AdminTurmasPage() {
         <ClassDetailView
           cls={selectedClass}
           canEdit
+          canManageGrades
           onBack={() => setSelectedClass(null)}
         />
       </div>

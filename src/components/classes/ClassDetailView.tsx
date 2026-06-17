@@ -12,10 +12,12 @@ type Tab = 'students' | 'teachers' | 'disciplines'
 interface ClassDetailViewProps {
   cls: ClassItem
   canEdit: boolean
+  canManageGrades?: boolean
+  showTeachers?: boolean
   onBack: () => void
 }
 
-const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+const allTabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'students', label: 'Alunos', icon: <Users className="h-3.5 w-3.5" /> },
   {
     id: 'teachers',
@@ -32,9 +34,14 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 export function ClassDetailView({
   cls,
   canEdit,
+  canManageGrades = false,
+  showTeachers = true,
   onBack,
 }: ClassDetailViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('students')
+  const tabs = showTeachers
+    ? allTabs
+    : allTabs.filter((t) => t.id !== 'teachers')
 
   return (
     <div className="space-y-6">
@@ -78,13 +85,21 @@ export function ClassDetailView({
 
       <div>
         {activeTab === 'students' && (
-          <ClassStudentsTab classId={cls.class_id} canEdit={canEdit} />
+          <ClassStudentsTab
+            classId={cls.class_id}
+            canEdit={canEdit}
+            canManageGrades={canManageGrades}
+          />
         )}
-        {activeTab === 'teachers' && (
+        {activeTab === 'teachers' && showTeachers && (
           <ClassTeachersTab classId={cls.class_id} canEdit={canEdit} />
         )}
         {activeTab === 'disciplines' && (
-          <ClassDisciplinesTab classId={cls.class_id} canEdit={canEdit} />
+          <ClassDisciplinesTab
+            classId={cls.class_id}
+            canEdit={canEdit}
+            canManageGrades={canManageGrades}
+          />
         )}
       </div>
     </div>
