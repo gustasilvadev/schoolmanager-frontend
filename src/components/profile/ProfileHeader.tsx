@@ -3,6 +3,7 @@ import type { MeResponse } from '@/types/auth'
 import { ACCENT, ROLE_LABEL } from './theme'
 import type { Accent } from './theme'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { ProfilePhotoUploader } from './ProfilePhotoUploader'
 
 interface ProfileHeaderProps {
   data: MeResponse
@@ -12,18 +13,14 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ data, accent }: ProfileHeaderProps) {
   const ac = ACCENT[accent]
   const displayName = data.teacher?.teacher_name ?? data.user_email
-  const initials = displayName.charAt(0).toUpperCase()
 
   return (
     <div className="flex items-center gap-5 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-      <div
-        className={cn(
-          'flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl font-bold text-white',
-          ac.avatar,
-        )}
-      >
-        {initials}
-      </div>
+      <ProfilePhotoUploader
+        currentPhoto={data.user_photo}
+        name={displayName}
+        fallbackClassName={ac.avatar}
+      />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="truncate text-xl font-semibold text-white">
