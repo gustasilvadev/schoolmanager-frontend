@@ -19,6 +19,7 @@ export interface Student {
   student_email: string
   student_birthday: string | null
   student_status: number
+  student_photo?: string | null
   student_responsibles?: StudentResponsible[]
 }
 

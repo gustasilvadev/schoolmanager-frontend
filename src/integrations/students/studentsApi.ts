@@ -42,3 +42,16 @@ export async function restoreStudent(id: number): Promise<RestoreStudent> {
   const { data } = await api.post<RestoreStudent>(`/restoreStudentById/${id}`)
   return data
 }
+
+// Override do Content-Type derruba o default JSON do client; o browser injeta o boundary.
+export async function uploadStudentPhoto(
+  id: number,
+  file: File,
+): Promise<Student> {
+  const formData = new FormData()
+  formData.append('photo', file)
+  const { data } = await api.post<Student>(`/uploadPhotoById/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}

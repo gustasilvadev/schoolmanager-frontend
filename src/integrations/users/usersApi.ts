@@ -55,3 +55,23 @@ export async function restoreUser(id: number): Promise<RestoreUserResponse> {
   const { data } = await api.post<RestoreUserResponse>(`/restoreUserById/${id}`)
   return data
 }
+
+// Override do Content-Type derruba o default JSON do client (axios v1 serializaria
+// o FormData como JSON); o browser injeta o boundary correto automaticamente.
+export async function uploadMyPhoto(file: File): Promise<User> {
+  const formData = new FormData()
+  formData.append('photo', file)
+  const { data } = await api.post<User>('/uploadPhoto', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
+
+export async function uploadUserPhoto(id: number, file: File): Promise<User> {
+  const formData = new FormData()
+  formData.append('photo', file)
+  const { data } = await api.post<User>(`/uploadPhotoById/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}

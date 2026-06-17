@@ -3,6 +3,7 @@ export interface AuthSession {
   userId: number
   userEmail: string
   teacherId?: number
+  userPhoto?: string | null
 }
 
 export interface AuthContextValue {
@@ -22,6 +23,7 @@ export interface LoginUserData {
   role: 'ADMIN' | 'TEACHER'
   teacher_id?: number
   user_status: number
+  user_photo?: string | null
 }
 
 export interface LoginResponse {
@@ -42,5 +44,6 @@ export interface MeResponse {
   user_email: string
   role: 'ADMIN' | 'TEACHER'
   user_status: number
+  user_photo?: string | null
   teacher: TeacherProfileData | null
 }

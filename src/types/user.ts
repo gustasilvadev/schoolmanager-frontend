@@ -7,6 +7,7 @@ export interface User {
   user_status: UserStatus
   role: UserRole
   teacher_id?: number | null
+  user_photo?: string | null
 }
 
 export interface ListUsersParams {
