@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { listGradesByStudent } from '@/integrations/grades/gradesApi'
 import { useStudentFinalAverages, useCalculateFinalAverage } from '@/hooks/useFinalAverages'
+import { useClassDisciplineNameMap } from '@/hooks/useClassDisciplineNameMap'
 import { DisciplineGradeCard } from './DisciplineGradeCard'
 import type { GradeWithTest } from '@/types/grade'
 import { Loader2, User } from 'lucide-react'
@@ -26,6 +27,7 @@ export function StudentReportCard({
 
   const { data: averages, isLoading: isLoadingAverages } = useStudentFinalAverages(studentId)
   const { mutate: calculateAverage } = useCalculateFinalAverage()
+  const { nameMap: disciplineNames } = useClassDisciplineNameMap()
 
   if (isLoadingGrades || isLoadingAverages) {
     return (
@@ -62,9 +64,8 @@ export function StudentReportCard({
           <DisciplineGradeCard
             key={classDisciplineId}
             disciplineName={
-              discGrades[0].tests.test_description
-                ? `Disciplina #${classDisciplineId}`
-                : `Disciplina #${classDisciplineId}`
+              disciplineNames.get(Number(classDisciplineId)) ??
+              `Disciplina #${classDisciplineId}`
             }
             grades={discGrades}
             finalAverage={averages?.find(
