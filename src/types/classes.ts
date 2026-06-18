@@ -9,7 +9,9 @@ export interface ClassStudent {
   class_student_id: number
   class_id: number
   student_id: number
-  student_name?: string
+  student_name?: string | null
+  student_email?: string | null
+  student_photo?: string | null
 }
 
 export interface ClassTeacher {

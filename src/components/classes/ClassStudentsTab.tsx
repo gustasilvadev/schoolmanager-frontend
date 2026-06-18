@@ -12,7 +12,7 @@ import {
 import { useClassDisciplines } from '@/hooks/useClassDisciplines'
 import { useClassFinalAverages } from '@/hooks/useFinalAverages'
 import { useStudents } from '@/hooks/useStudents'
-import { getInitials } from '@/utils/strings'
+import { Avatar } from '@/components/ui/Avatar'
 import { formatAverage, meanOfAverages } from '@/utils/averages'
 import type { ClassStudent } from '@/types/classes'
 
@@ -44,9 +44,16 @@ export function ClassStudentsTab({
   } = useStudents({ limit: 500, includeDeleted: true }, { enabled: canEdit })
 
   const studentMap = useMemo(() => {
-    const map = new Map<number, { name: string; email: string }>()
+    const map = new Map<
+      number,
+      { name: string; email: string; photo?: string | null }
+    >()
     allStudentsData?.students.forEach((s) => {
-      map.set(s.student_id, { name: s.student_name, email: s.student_email })
+      map.set(s.student_id, {
+        name: s.student_name,
+        email: s.student_email,
+        photo: s.student_photo,
+      })
     })
     return map
   }, [allStudentsData])
@@ -84,10 +91,13 @@ export function ClassStudentsTab({
       sublabel: s.student_email,
     }))
 
-  function resolveStudent(studentId: number, fallbackName?: string | null) {
-    if (fallbackName) return { name: fallbackName, email: studentMap.get(studentId)?.email }
-    const fromMap = studentMap.get(studentId)
-    return fromMap ?? { name: `Aluno #${studentId}`, email: undefined }
+  function resolveStudent(s: ClassStudent) {
+    const fromMap = studentMap.get(s.student_id)
+    return {
+      name: s.student_name ?? fromMap?.name ?? `Aluno #${s.student_id}`,
+      email: s.student_email ?? fromMap?.email,
+      photo: s.student_photo ?? fromMap?.photo,
+    }
   }
 
   function handleConfirm(ids: number[]) {
@@ -158,15 +168,18 @@ export function ClassStudentsTab({
             </thead>
             <tbody className="divide-y divide-slate-800 bg-slate-900/50">
               {classStudents.map((s) => {
-                const info = resolveStudent(s.student_id, s.student_name)
+                const info = resolveStudent(s)
                 const mean = meanOfAverages(averagesByStudent.get(s.student_id) ?? [])
                 return (
                   <tr key={s.class_student_id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-semibold text-blue-300">
-                          {getInitials(info.name)}
-                        </div>
+                        <Avatar
+                          src={info.photo}
+                          name={info.name}
+                          size="sm"
+                          fallbackClassName="bg-blue-600/20 text-blue-300"
+                        />
                         <span className="font-medium text-white">{info.name}</span>
                       </div>
                     </td>
@@ -235,9 +248,7 @@ export function ClassStudentsTab({
         open={gradesStudent !== null}
         title="Médias do aluno"
         subtitle={
-          gradesStudent
-            ? resolveStudent(gradesStudent.student_id, gradesStudent.student_name).name
-            : undefined
+          gradesStudent ? resolveStudent(gradesStudent).name : undefined
         }
         rows={gradesRows}
         isLoading={loadingAverages}

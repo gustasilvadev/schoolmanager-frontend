@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { formatGradeDisplay, parseGradeValue } from '@/utils/grade'
 import { cn } from '@/lib/utils'
+import { Avatar } from '@/components/ui/Avatar'
 
 interface GradeCellProps {
   studentId: string
   studentName: string
+  studentPhoto?: string | null
   initialValue?: number
   maxScore?: number
   onChange: (data: { value: string }) => void
@@ -14,6 +16,7 @@ interface GradeCellProps {
 
 export function GradeCell({
   studentName,
+  studentPhoto,
   initialValue,
   onChange,
   isSaving,
@@ -32,7 +35,12 @@ export function GradeCell({
         isEdited ? 'bg-blue-900/10' : 'hover:bg-slate-900/30',
       )}
     >
-      <td className="py-3 px-4 text-sm text-white font-medium">{studentName}</td>
+      <td className="py-3 px-4">
+        <div className="flex items-center gap-3">
+          <Avatar src={studentPhoto} name={studentName} size="sm" />
+          <span className="text-sm font-medium text-white">{studentName}</span>
+        </div>
+      </td>
       <td className="py-3 px-4">
         <div className="relative max-w-[100px]">
           <input

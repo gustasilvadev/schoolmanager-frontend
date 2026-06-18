@@ -88,6 +88,7 @@ export function GradeSheet({
                     key={student.student_id}
                     studentId={student.student_id.toString()}
                     studentName={student.student_name || `Aluno ${student.student_id}`}
+                    studentPhoto={student.student_photo}
                     initialValue={existing?.grade_value}
                     onChange={(data) => handleRowChange(student.student_id.toString(), data)}
                     isSaving={isSaving}

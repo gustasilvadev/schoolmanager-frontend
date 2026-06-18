@@ -1,6 +1,7 @@
 export interface GradeSheetStudent {
   student_id: number
-  student_name?: string
+  student_name?: string | null
+  student_photo?: string | null
 }
 
 export interface StudentResponsible {
