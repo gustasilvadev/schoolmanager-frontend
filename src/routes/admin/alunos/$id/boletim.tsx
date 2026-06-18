@@ -27,6 +27,7 @@ function AlunoBoletimPage() {
         studentName={name}
         studentEmail={email}
         canCalculate={false}
+        canRecalculateAll
       />
     </div>
   )
