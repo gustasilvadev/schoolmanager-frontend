@@ -5,6 +5,7 @@ export interface Teacher {
   teacher_email: string
   teacher_status: number
   user_id: number
+  user_photo?: string | null
 }
 
 export interface TeacherDisciplinesResponse {

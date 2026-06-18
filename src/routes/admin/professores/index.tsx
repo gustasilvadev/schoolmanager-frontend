@@ -1,8 +1,9 @@
-﻿import { useState, useEffect } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, GraduationCap, Search, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTeachers, useDeleteTeacher, useRestoreTeacher } from '@/hooks/useTeachers'
+import { useUsers } from '@/hooks/useUsers'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { TeacherTable } from './-components/TeacherTable'
@@ -39,7 +40,21 @@ function ProfessoresPage() {
     name: search || undefined,
   })
 
-  const teachers = data?.teachers ?? []
+  const { data: users } = useUsers({ limit: 500, includeDeleted: true })
+  const photoByUserId = useMemo(() => {
+    const map = new Map<number, string | null>()
+    users?.forEach((u) => map.set(u.user_id, u.user_photo ?? null))
+    return map
+  }, [users])
+
+  const teachers = useMemo(
+    () =>
+      (data?.teachers ?? []).map((t) => ({
+        ...t,
+        user_photo: photoByUserId.get(t.user_id) ?? null,
+      })),
+    [data, photoByUserId],
+  )
   const total = data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 

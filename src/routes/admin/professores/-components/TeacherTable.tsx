@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-table'
 import { BookOpen, Eye, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Teacher } from '@/types/teacher'
 import { TeacherTableEmpty } from './TeacherTableEmpty'
@@ -35,7 +36,14 @@ export function TeacherTable({
     columnHelper.accessor('teacher_name', {
       header: 'Nome',
       cell: (info) => (
-        <span className="font-medium text-white">{info.getValue()}</span>
+        <div className="flex items-center gap-3">
+          <Avatar
+            src={info.row.original.user_photo}
+            name={info.getValue()}
+            size="md"
+          />
+          <span className="font-medium text-white">{info.getValue()}</span>
+        </div>
       ),
     }),
     columnHelper.accessor('teacher_cpf', {
