@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { StudentReportCard } from '@/components/report/StudentReportCard'
+import { StudentReportCard } from '@/routes/-components/report/StudentReportCard'
 
 export const Route = createFileRoute('/admin/alunos/$id/boletim')({
   validateSearch: (

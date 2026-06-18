@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { StudentReportCard } from '@/components/report/StudentReportCard'
+import { StudentReportCard } from '@/routes/-components/report/StudentReportCard'
 import { ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
