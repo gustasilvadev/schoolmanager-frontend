@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Eye, Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Eye, GraduationCap, Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -14,6 +14,7 @@ interface StudentTableProps {
   students: Student[]
   isLoading: boolean
   onView: (student: Student) => void
+  onViewGrades: (student: Student) => void
   onEdit: (student: Student) => void
   onDelete: (student: Student) => void
   onRestore: (student: Student) => void
@@ -37,6 +38,7 @@ export function StudentTable({
   students,
   isLoading,
   onView,
+  onViewGrades,
   onEdit,
   onDelete,
   onRestore,
@@ -84,6 +86,16 @@ export function StudentTable({
               className="h-8 w-8 p-0"
             >
               <Eye className="h-3.5 w-3.5" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onViewGrades(student)}
+              title="Ver médias"
+              className="h-8 w-8 p-0 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+            >
+              <GraduationCap className="h-3.5 w-3.5" />
             </Button>
 
             {!isDeleted && (

@@ -17,6 +17,7 @@ export const Route = createFileRoute('/admin/alunos/')({
 const LIMIT = 10
 
 function AlunosPage() {
+  const navigate = Route.useNavigate()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [includeDeleted, setIncludeDeleted] = useState(false)
@@ -52,6 +53,14 @@ function AlunosPage() {
 
   function handleView(student: Student) {
     setViewingStudent(student)
+  }
+
+  function handleViewGrades(student: Student) {
+    navigate({
+      to: '/admin/alunos/$id/boletim',
+      params: { id: String(student.student_id) },
+      search: { name: student.student_name, email: student.student_email },
+    })
   }
 
   function handleEdit(student: Student) {
@@ -150,6 +159,7 @@ function AlunosPage() {
           students={students}
           isLoading={isLoading}
           onView={handleView}
+          onViewGrades={handleViewGrades}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onRestore={handleRestore}

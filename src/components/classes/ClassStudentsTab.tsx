@@ -1,26 +1,41 @@
 import { useMemo, useState } from 'react'
-import { Loader2, Trash2, UserPlus, Users } from 'lucide-react'
+import { GraduationCap, Loader2, Trash2, UserPlus, Users } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { AssignSelectionModal } from './AssignSelectionModal'
+import { FinalAverageManagerModal } from './FinalAverageManagerModal'
+import type { FinalAverageRow } from './FinalAverageManagerModal'
 import {
   useClassStudents,
   useEnrollStudents,
   useUnenrollStudent,
 } from '@/hooks/useClassStudents'
+import { useClassDisciplines } from '@/hooks/useClassDisciplines'
+import { useClassFinalAverages } from '@/hooks/useFinalAverages'
 import { useStudents } from '@/hooks/useStudents'
 import { getInitials } from '@/utils/strings'
+import { formatAverage, meanOfAverages } from '@/utils/averages'
+import type { ClassStudent } from '@/types/classes'
 
 interface ClassStudentsTabProps {
   classId: number
   canEdit: boolean
+  canManageGrades?: boolean
 }
 
-export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
+export function ClassStudentsTab({
+  classId,
+  canEdit,
+  canManageGrades = false,
+}: ClassStudentsTabProps) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [gradesStudent, setGradesStudent] = useState<ClassStudent | null>(null)
 
   const { data: classStudents = [], isLoading } = useClassStudents(classId)
   const { mutate: enrollStudents, isPending: enrolling } = useEnrollStudents()
   const { mutate: unenroll } = useUnenrollStudent()
+
+  const { averages, isLoading: loadingAverages } = useClassFinalAverages(classId)
+  const { data: disciplines = [] } = useClassDisciplines(classId)
 
   const {
     data: allStudentsData,
@@ -35,6 +50,29 @@ export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
     })
     return map
   }, [allStudentsData])
+
+  const disciplineNameById = useMemo(() => {
+    const map = new Map<number, string>()
+    disciplines.forEach((d) => {
+      map.set(
+        d.class_discipline_id,
+        d.disciplines?.discipline_name ?? `Disciplina #${d.discipline_id}`,
+      )
+    })
+    return map
+  }, [disciplines])
+
+  const averagesByStudent = useMemo(() => {
+    const map = new Map<number, typeof averages>()
+    averages.forEach((a) => {
+      const list = map.get(a.student_id) ?? []
+      list.push(a)
+      map.set(a.student_id, list)
+    })
+    return map
+  }, [averages])
+
+  const showActions = canEdit || canManageGrades
 
   const enrolledIds = new Set(classStudents.map((s) => s.student_id))
 
@@ -58,6 +96,15 @@ export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
       { onSuccess: () => setModalOpen(false) },
     )
   }
+
+  const gradesRows: FinalAverageRow[] = gradesStudent
+    ? (averagesByStudent.get(gradesStudent.student_id) ?? []).map((a) => ({
+        label:
+          disciplineNameById.get(a.class_discipline_id) ??
+          `Disciplina #${a.class_discipline_id}`,
+        average: a,
+      }))
+    : []
 
   if (isLoading) {
     return (
@@ -99,14 +146,20 @@ export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
                 <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
                   E-mail
                 </th>
-                {canEdit && (
-                  <th className="px-4 py-2.5 w-12" />
+                <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Média
+                </th>
+                {showActions && (
+                  <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Ações
+                  </th>
                 )}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800 bg-slate-900/50">
               {classStudents.map((s) => {
                 const info = resolveStudent(s.student_id, s.student_name)
+                const mean = meanOfAverages(averagesByStudent.get(s.student_id) ?? [])
                 return (
                   <tr key={s.class_student_id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-4 py-3">
@@ -120,17 +173,41 @@ export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
                     <td className="px-4 py-3 text-slate-400">
                       {info.email ?? '—'}
                     </td>
-                    {canEdit && (
-                      <td className="px-4 py-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => unenroll({ classId, studentId: s.student_id })}
-                          title="Remover da turma"
-                          className="h-7 w-7 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-300"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                    <td className="px-4 py-3">
+                      {loadingAverages ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-600" />
+                      ) : (
+                        <span className={mean === null ? 'text-slate-600' : 'font-semibold text-white'}>
+                          {formatAverage(mean)}
+                        </span>
+                      )}
+                    </td>
+                    {showActions && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          {canManageGrades && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setGradesStudent(s)}
+                              title="Gerenciar médias"
+                              className="h-7 w-7 p-0 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                            >
+                              <GraduationCap className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                          {canEdit && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => unenroll({ classId, studentId: s.student_id })}
+                              title="Remover da turma"
+                              className="h-7 w-7 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -152,6 +229,19 @@ export function ClassStudentsTab({ classId, canEdit }: ClassStudentsTabProps) {
         isPending={enrolling}
         onConfirm={handleConfirm}
         onClose={() => setModalOpen(false)}
+      />
+
+      <FinalAverageManagerModal
+        open={gradesStudent !== null}
+        title="Médias do aluno"
+        subtitle={
+          gradesStudent
+            ? resolveStudent(gradesStudent.student_id, gradesStudent.student_name).name
+            : undefined
+        }
+        rows={gradesRows}
+        isLoading={loadingAverages}
+        onClose={() => setGradesStudent(null)}
       />
     </div>
   )

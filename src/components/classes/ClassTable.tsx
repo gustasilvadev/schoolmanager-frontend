@@ -7,6 +7,8 @@ import {
 import { Eye, Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { useClassFinalAverages } from '@/hooks/useFinalAverages'
+import { formatAverage, meanOfAverages } from '@/utils/averages'
 import type { ClassItem } from '@/types/classes'
 
 interface ClassTableProps {
@@ -44,6 +46,11 @@ export function ClassTable({
     col.accessor('class_status', {
       header: 'Status',
       cell: (info) => <StatusBadge status={info.getValue()} />,
+    }),
+    col.display({
+      id: 'average',
+      header: 'Média da Turma',
+      cell: ({ row }) => <ClassAverageCell classId={row.original.class_id} />,
     }),
     col.display({
       id: 'actions',
@@ -155,5 +162,20 @@ export function ClassTable({
         </tbody>
       </table>
     </div>
+  )
+}
+
+function ClassAverageCell({ classId }: { classId: number }) {
+  const { averages, isLoading } = useClassFinalAverages(classId)
+
+  if (isLoading) {
+    return <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-600" />
+  }
+
+  const mean = meanOfAverages(averages)
+  return (
+    <span className={mean === null ? 'text-slate-600' : 'font-semibold text-white'}>
+      {formatAverage(mean)}
+    </span>
   )
 }

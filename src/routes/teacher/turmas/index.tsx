@@ -17,6 +17,8 @@ function TeacherTurmasPage() {
         <ClassDetailView
           cls={selectedClass}
           canEdit={false}
+          canManageGrades
+          showTeachers={false}
           onBack={() => setSelectedClass(null)}
         />
       </div>

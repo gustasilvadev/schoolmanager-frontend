@@ -17,7 +17,7 @@ const navItems = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Alunos', to: '/admin/alunos', icon: Users },
   { label: 'Professores', to: '/admin/professores', icon: GraduationCap },
-  { label: 'Turmas', to: '/admin/turmas', icon: BookOpen },
+  { label: 'Turmas e Disciplinas', to: '/admin/turmas', icon: BookOpen },
   { label: 'Usuários', to: '/admin/usuarios', icon: UserCog },
   { label: 'Avaliações', to: '/admin/avaliacoes', icon: ClipboardList },
   { label: 'Avisos', to: '/admin/avisos', icon: Bell },

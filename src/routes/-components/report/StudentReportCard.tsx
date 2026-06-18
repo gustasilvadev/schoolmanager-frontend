@@ -1,22 +1,30 @@
 import { useQuery } from '@tanstack/react-query'
 import { listGradesByStudent } from '@/integrations/grades/gradesApi'
-import { useStudentFinalAverages, useCalculateFinalAverage } from '@/hooks/useFinalAverages'
+import {
+  useStudentFinalAverages,
+  useCalculateFinalAverage,
+  useCalculateAveragesBatch,
+} from '@/hooks/useFinalAverages'
+import { useClassDisciplineNameMap } from '@/hooks/useClassDisciplineNameMap'
 import { DisciplineGradeCard } from './DisciplineGradeCard'
+import { Button } from '@/components/ui/Button'
 import type { GradeWithTest } from '@/types/grade'
-import { Loader2, User } from 'lucide-react'
+import { Calculator, Loader2, User } from 'lucide-react'
 
 interface StudentReportCardProps {
   studentId: string
   studentName?: string
-  studentRA?: string
+  studentEmail?: string
   canCalculate?: boolean
+  canRecalculateAll?: boolean
 }
 
 export function StudentReportCard({
   studentId,
   studentName,
-  studentRA,
+  studentEmail,
   canCalculate,
+  canRecalculateAll = false,
 }: StudentReportCardProps) {
   const { data: grades, isLoading: isLoadingGrades } = useQuery({
     queryKey: ['grades', 'byStudent', studentId],
@@ -26,6 +34,8 @@ export function StudentReportCard({
 
   const { data: averages, isLoading: isLoadingAverages } = useStudentFinalAverages(studentId)
   const { mutate: calculateAverage } = useCalculateFinalAverage()
+  const { mutate: recalculateAll, isPending: isRecalculating } = useCalculateAveragesBatch()
+  const { nameMap: disciplineNames } = useClassDisciplineNameMap()
 
   if (isLoadingGrades || isLoadingAverages) {
     return (
@@ -35,15 +45,21 @@ export function StudentReportCard({
     )
   }
 
-  const gradesByDiscipline = (grades as GradeWithTest[] | undefined)?.reduce(
-    (acc, grade) => {
-      const key = grade.tests.class_discipline_id.toString()
-      if (!acc[key]) acc[key] = []
-      acc[key].push(grade)
-      return acc
-    },
-    {} as Record<string, GradeWithTest[]>,
-  ) ?? {}
+  const gradesByDiscipline = new Map<string, GradeWithTest[]>()
+  for (const grade of grades ?? []) {
+    const key = grade.tests.class_discipline_id.toString()
+    const list = gradesByDiscipline.get(key)
+    if (list) list.push(grade)
+    else gradesByDiscipline.set(key, [grade])
+  }
+
+  function handleRecalculateAll() {
+    const pairs = [...gradesByDiscipline.keys()].map((cdId) => ({
+      studentId: Number(studentId),
+      classDisciplineId: Number(cdId),
+    }))
+    if (pairs.length > 0) recalculateAll(pairs)
+  }
 
   return (
     <div className="space-y-8">
@@ -53,18 +69,34 @@ export function StudentReportCard({
         </div>
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white">{studentName || 'Aluno'}</h2>
-          <p className="text-slate-400 text-sm">RA: {studentRA || '—'} • Status: Ativo</p>
+          <p className="text-slate-400 text-sm">E-mail: {studentEmail || '—'} • Status: Ativo</p>
         </div>
+
+        {canRecalculateAll && (
+          <Button
+            variant="ghost"
+            onClick={handleRecalculateAll}
+            disabled={isRecalculating || gradesByDiscipline.size === 0}
+            title="Recalcular as médias deste aluno a partir das notas atuais"
+            className="ml-auto flex items-center gap-2 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+          >
+            {isRecalculating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Calculator className="h-4 w-4" />
+            )}
+            Recalcular médias
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {Object.entries(gradesByDiscipline).map(([classDisciplineId, discGrades]) => (
+        {[...gradesByDiscipline].map(([classDisciplineId, discGrades]) => (
           <DisciplineGradeCard
             key={classDisciplineId}
             disciplineName={
-              discGrades[0].tests.test_description
-                ? `Disciplina #${classDisciplineId}`
-                : `Disciplina #${classDisciplineId}`
+              disciplineNames.get(Number(classDisciplineId)) ??
+              `Disciplina #${classDisciplineId}`
             }
             grades={discGrades}
             finalAverage={averages?.find(
@@ -77,7 +109,7 @@ export function StudentReportCard({
           />
         ))}
 
-        {Object.keys(gradesByDiscipline).length === 0 && (
+        {gradesByDiscipline.size === 0 && (
           <div className="col-span-full py-20 text-center bg-slate-900/20 rounded-2xl border border-dashed border-slate-800">
             <p className="text-slate-500">Nenhuma nota lançada para este aluno ainda.</p>
           </div>

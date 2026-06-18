@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useBulkCreateGrades, useUpdateGrade } from '@/hooks/useGrades'
+import { useCalculateAveragesBatch } from '@/hooks/useFinalAverages'
 import { parseGradeValue } from '@/utils/grade'
 import { toast } from 'sonner'
 import type { Grade } from '@/types/grade'
@@ -14,10 +15,13 @@ export function useGradeSheetSave(
   testId: number,
   students: GradeSheetStudent[],
   existingGrades: Grade[],
+  classDisciplineId?: number,
 ) {
   const [formState, setFormState] = useState<Record<string, RowState>>({})
   const { mutateAsync: bulkCreate, isPending: isBulkCreating } = useBulkCreateGrades()
   const { mutateAsync: updateGrade, isPending: isUpdating } = useUpdateGrade()
+  const { mutate: calculateBatch, isPending: isCalculating } =
+    useCalculateAveragesBatch()
 
   const handleRowChange = (studentId: string, data: { value: string }) => {
     setFormState((prev) => ({
@@ -89,15 +93,43 @@ export function useGradeSheetSave(
       }
 
       toast.success('Alterações processadas')
+
+      // Recalcula automaticamente a média dos alunos cujas notas mudaram.
+      if (classDisciplineId && classDisciplineId > 0) {
+        const affected = new Set<number>([
+          ...toCreate.map((g) => g.student_id),
+          ...toUpdate
+            .map((item) => existingGrades.find((g) => g.grade_id === item.id)?.student_id)
+            .filter((id): id is number => typeof id === 'number'),
+        ])
+        if (affected.size > 0) {
+          calculateBatch(
+            [...affected].map((studentId) => ({ studentId, classDisciplineId })),
+          )
+        }
+      }
     } catch {
       toast.error('Erro ao salvar algumas notas')
     }
+  }
+
+  const handleRecalculateAll = () => {
+    if (!classDisciplineId || classDisciplineId <= 0) {
+      toast.error('Não foi possível identificar a disciplina desta avaliação')
+      return
+    }
+    if (students.length === 0) return
+    calculateBatch(
+      students.map((s) => ({ studentId: s.student_id, classDisciplineId })),
+    )
   }
 
   return {
     formState,
     handleRowChange,
     handleSaveAll,
+    handleRecalculateAll,
     isSaving: isBulkCreating || isUpdating,
+    isCalculating,
   }
 }

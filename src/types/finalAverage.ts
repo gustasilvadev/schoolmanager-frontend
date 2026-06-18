@@ -7,3 +7,7 @@ export interface FinalAverage {
   class_discipline_id: number
   final_average_status: StatusValue
 }
+
+export interface UpdateFinalAverageDTO {
+  final_average_value?: number
+}

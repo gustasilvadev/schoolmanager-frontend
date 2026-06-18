@@ -12,6 +12,8 @@ type Tab = 'students' | 'teachers' | 'disciplines'
 interface ClassDetailViewProps {
   cls: ClassItem
   canEdit: boolean
+  canManageGrades?: boolean
+  showTeachers?: boolean
   onBack: () => void
 }
 
@@ -33,6 +35,8 @@ const allTabs: { id: Tab; label: string; icon: React.ReactNode; adminOnly?: bool
 export function ClassDetailView({
   cls,
   canEdit,
+  canManageGrades = false,
+  showTeachers = true,
   onBack,
 }: ClassDetailViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('students')
@@ -80,13 +84,21 @@ export function ClassDetailView({
 
       <div>
         {activeTab === 'students' && (
-          <ClassStudentsTab classId={cls.class_id} canEdit={canEdit} />
+          <ClassStudentsTab
+            classId={cls.class_id}
+            canEdit={canEdit}
+            canManageGrades={canManageGrades}
+          />
         )}
-        {activeTab === 'teachers' && (
+        {activeTab === 'teachers' && showTeachers && (
           <ClassTeachersTab classId={cls.class_id} canEdit={canEdit} />
         )}
         {activeTab === 'disciplines' && (
-          <ClassDisciplinesTab classId={cls.class_id} canEdit={canEdit} />
+          <ClassDisciplinesTab
+            classId={cls.class_id}
+            canEdit={canEdit}
+            canManageGrades={canManageGrades}
+          />
         )}
       </div>
     </div>

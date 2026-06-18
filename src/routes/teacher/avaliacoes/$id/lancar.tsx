@@ -82,6 +82,7 @@ function LancarNotasPage() {
         testId={testId}
         students={students ?? []}
         existingGrades={existingGrades ?? []}
+        classDisciplineId={test.class_discipline_id}
       />
     </div>
   )
