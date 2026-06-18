@@ -9,14 +9,14 @@ import { Loader2, User } from 'lucide-react'
 interface StudentReportCardProps {
   studentId: string
   studentName?: string
-  studentRA?: string
+  studentEmail?: string
   canCalculate?: boolean
 }
 
 export function StudentReportCard({
   studentId,
   studentName,
-  studentRA,
+  studentEmail,
   canCalculate,
 }: StudentReportCardProps) {
   const { data: grades, isLoading: isLoadingGrades } = useQuery({
@@ -37,15 +37,13 @@ export function StudentReportCard({
     )
   }
 
-  const gradesByDiscipline = (grades as GradeWithTest[] | undefined)?.reduce(
-    (acc, grade) => {
-      const key = grade.tests.class_discipline_id.toString()
-      if (!acc[key]) acc[key] = []
-      acc[key].push(grade)
-      return acc
-    },
-    {} as Record<string, GradeWithTest[]>,
-  ) ?? {}
+  const gradesByDiscipline = new Map<string, GradeWithTest[]>()
+  for (const grade of grades ?? []) {
+    const key = grade.tests.class_discipline_id.toString()
+    const list = gradesByDiscipline.get(key)
+    if (list) list.push(grade)
+    else gradesByDiscipline.set(key, [grade])
+  }
 
   return (
     <div className="space-y-8">
@@ -55,12 +53,12 @@ export function StudentReportCard({
         </div>
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white">{studentName || 'Aluno'}</h2>
-          <p className="text-slate-400 text-sm">RA: {studentRA || '—'} • Status: Ativo</p>
+          <p className="text-slate-400 text-sm">E-mail: {studentEmail || '—'} • Status: Ativo</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {Object.entries(gradesByDiscipline).map(([classDisciplineId, discGrades]) => (
+        {[...gradesByDiscipline].map(([classDisciplineId, discGrades]) => (
           <DisciplineGradeCard
             key={classDisciplineId}
             disciplineName={
@@ -78,7 +76,7 @@ export function StudentReportCard({
           />
         ))}
 
-        {Object.keys(gradesByDiscipline).length === 0 && (
+        {gradesByDiscipline.size === 0 && (
           <div className="col-span-full py-20 text-center bg-slate-900/20 rounded-2xl border border-dashed border-slate-800">
             <p className="text-slate-500">Nenhuma nota lançada para este aluno ainda.</p>
           </div>
