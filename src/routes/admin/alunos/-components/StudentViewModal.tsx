@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Dialog } from '@/components/ui/Dialog'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Student } from '@/types/student'
+import { StudentPhotoUploader } from './StudentPhotoUploader'
 
 interface StudentViewModalProps {
   student: Student | null
@@ -27,6 +28,16 @@ export function StudentViewModal({ student, open, onClose }: StudentViewModalPro
     <Dialog open={open} onClose={onClose} title="Detalhes do Aluno" className="max-w-lg">
       {student ? (
         <div className="flex flex-col gap-6">
+          <div className="flex justify-center">
+            <StudentPhotoUploader
+              key={student.student_id}
+              studentId={student.student_id}
+              initialPhoto={student.student_photo}
+              name={student.student_name}
+              disabled={student.student_status === 2}
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <InfoRow label="Nome" value={student.student_name} />

@@ -19,7 +19,7 @@ export function TestActions({ test, onEdit }: TestActionsProps) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center justify-end gap-2">
       <Link
         to="/teacher/avaliacoes/$id/lancar"
         params={{ id: test.test_id.toString() }}

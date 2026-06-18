@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Dialog } from '@/components/ui/Dialog'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { User } from '@/types/user'
+import { UserPhotoUploader } from './UserPhotoUploader'
 
 interface UserViewModalProps {
   user: User | null
@@ -24,10 +25,21 @@ export function UserViewModal({ user, open, onClose }: UserViewModalProps) {
   return (
     <Dialog open={open} onClose={onClose} title="Detalhes do Usuário">
       {user ? (
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
-            <InfoRow label="E-mail" value={user.user_email} />
+        <div className="flex flex-col gap-5">
+          <div className="flex justify-center">
+            <UserPhotoUploader
+              key={user.user_id}
+              userId={user.user_id}
+              initialPhoto={user.user_photo}
+              name={user.user_email}
+              disabled={user.user_status === 2}
+            />
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <InfoRow label="E-mail" value={user.user_email} />
+            </div>
           <InfoRow
             label="Papel"
             value={user.role === 'ADMIN' ? 'Administrador' : 'Professor'}
@@ -36,10 +48,7 @@ export function UserViewModal({ user, open, onClose }: UserViewModalProps) {
             label="Status"
             value={<StatusBadge status={user.user_status} />}
           />
-          <InfoRow label="ID" value={`#${user.user_id}`} />
-          {user.teacher_id != null && (
-            <InfoRow label="ID do Professor" value={`#${user.teacher_id}`} />
-          )}
+          </div>
         </div>
       ) : null}
     </Dialog>

@@ -37,7 +37,6 @@ export function TeacherViewModal({ teacher, open, onClose }: TeacherViewModalPro
             label="Status"
             value={<StatusBadge status={teacher.teacher_status} />}
           />
-          <InfoRow label="ID do Usuário" value={teacher.user_id} />
         </div>
       ) : null}
     </Dialog>

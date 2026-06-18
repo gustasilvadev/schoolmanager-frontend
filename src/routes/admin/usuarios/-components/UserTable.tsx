@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-table'
 import { Eye, GraduationCap, Pencil, RotateCcw, ShieldCheck, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Avatar } from '@/components/ui/Avatar'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { User } from '@/types/user'
 import { UserTableEmpty } from './UserTableEmpty'
@@ -50,7 +51,14 @@ export function UserTable({
     columnHelper.accessor('user_email', {
       header: 'E-mail',
       cell: (info) => (
-        <span className="font-medium text-white">{info.getValue()}</span>
+        <div className="flex items-center gap-3">
+          <Avatar
+            src={info.row.original.user_photo}
+            name={info.getValue()}
+            size="md"
+          />
+          <span className="font-medium text-white">{info.getValue()}</span>
+        </div>
       ),
     }),
     columnHelper.accessor('role', {

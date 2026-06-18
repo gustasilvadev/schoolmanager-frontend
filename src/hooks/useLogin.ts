@@ -21,6 +21,7 @@ export function useLogin() {
         userId: data.user.user_id,
         userEmail: data.user.user_email,
         teacherId: data.user.teacher_id,
+        userPhoto: data.user.user_photo ?? null,
       })
 
       navigate({

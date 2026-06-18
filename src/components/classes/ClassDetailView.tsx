@@ -17,12 +17,13 @@ interface ClassDetailViewProps {
   onBack: () => void
 }
 
-const allTabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+const allTabs: { id: Tab; label: string; icon: React.ReactNode; adminOnly?: boolean }[] = [
   { id: 'students', label: 'Alunos', icon: <Users className="h-3.5 w-3.5" /> },
   {
     id: 'teachers',
     label: 'Professores',
     icon: <GraduationCap className="h-3.5 w-3.5" />,
+    adminOnly: true,
   },
   {
     id: 'disciplines',
@@ -39,9 +40,7 @@ export function ClassDetailView({
   onBack,
 }: ClassDetailViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('students')
-  const tabs = showTeachers
-    ? allTabs
-    : allTabs.filter((t) => t.id !== 'teachers')
+  const tabs = allTabs.filter((t) => !t.adminOnly || canEdit)
 
   return (
     <div className="space-y-6">
