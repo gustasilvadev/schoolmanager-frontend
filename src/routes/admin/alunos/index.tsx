@@ -59,7 +59,11 @@ function AlunosPage() {
     navigate({
       to: '/admin/alunos/$id/boletim',
       params: { id: String(student.student_id) },
-      search: { name: student.student_name, email: student.student_email },
+      search: {
+        name: student.student_name,
+        email: student.student_email,
+        photo: student.student_photo ?? undefined,
+      },
     })
   }
 
