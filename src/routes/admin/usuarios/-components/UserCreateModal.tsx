@@ -1,11 +1,15 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { useQueryClient } from '@tanstack/react-query'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { PhotoUpload } from '@/components/shared/PhotoUpload'
 import { useCreateUser } from '@/hooks/useUsers'
+import { uploadUserPhoto } from '@/integrations/users/usersApi'
 
 const schema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -28,6 +32,9 @@ interface UserCreateModalProps {
 
 export function UserCreateModal({ open, onClose }: UserCreateModalProps) {
   const { mutateAsync: createUser, isPending } = useCreateUser()
+  const queryClient = useQueryClient()
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
 
   const {
     register,
@@ -42,6 +49,8 @@ export function UserCreateModal({ open, onClose }: UserCreateModalProps) {
   })
 
   const selectedRole = watch('role')
+  const name = watch('teacher_name')
+  const busy = isPending || isUploadingPhoto
 
   function handleRoleChange(role: 'ADMIN' | 'TEACHER') {
     setValue('role', role)
@@ -49,14 +58,31 @@ export function UserCreateModal({ open, onClose }: UserCreateModalProps) {
 
   async function onSubmit(values: FormValues) {
     try {
-      await createUser({
+      const created = await createUser({
         email: values.email,
         password: values.password,
         role: values.role,
         teacher_name: values.teacher_name,
         teacher_cpf: values.teacher_cpf,
       })
-      toast.success('Usuário criado com sucesso!')
+
+      if (photoFile) {
+        setIsUploadingPhoto(true)
+        try {
+          await uploadUserPhoto(created.user_id, photoFile)
+          queryClient.invalidateQueries({ queryKey: ['users'] })
+          toast.success('Usuário criado com sucesso!')
+        } catch {
+          toast.warning(
+            'Usuário criado, mas não foi possível enviar a foto. Você pode adicioná-la depois nos detalhes do usuário.',
+          )
+        } finally {
+          setIsUploadingPhoto(false)
+        }
+      } else {
+        toast.success('Usuário criado com sucesso!')
+      }
+
       handleClose()
     } catch (error) {
       const message =
@@ -67,12 +93,26 @@ export function UserCreateModal({ open, onClose }: UserCreateModalProps) {
 
   function handleClose() {
     reset({ role: 'ADMIN' })
+    setPhotoFile(null)
+    setIsUploadingPhoto(false)
     onClose()
   }
 
   return (
     <Dialog open={open} onClose={handleClose} title="Novo Usuário">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <div className="flex flex-col items-center gap-2">
+          <PhotoUpload
+            currentPhoto={null}
+            name={name}
+            size="xl"
+            disabled={busy}
+            isUploading={isUploadingPhoto}
+            onFileSelected={setPhotoFile}
+          />
+          <p className="text-xs text-slate-500">Foto de perfil (opcional)</p>
+        </div>
+
         <div className="flex flex-col gap-2">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
             Papel no Sistema
@@ -152,12 +192,16 @@ export function UserCreateModal({ open, onClose }: UserCreateModalProps) {
             type="button"
             variant="ghost"
             onClick={handleClose}
-            disabled={isPending}
+            disabled={busy}
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? 'Criando...' : 'Criar Usuário'}
+          <Button type="submit" disabled={busy}>
+            {isUploadingPhoto
+              ? 'Enviando foto...'
+              : isPending
+                ? 'Criando...'
+                : 'Criar Usuário'}
           </Button>
         </div>
       </form>

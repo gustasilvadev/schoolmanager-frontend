@@ -1,13 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { UserPlus } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { PhotoUpload } from '@/components/shared/PhotoUpload'
 import { useCreateStudent, useUpdateStudent } from '@/hooks/useStudents'
+import { uploadStudentPhoto } from '@/integrations/students/studentsApi'
 import { ResponsibleSubForm } from './ResponsibleSubForm'
 import type { Student } from '@/types/student'
 
@@ -49,18 +52,25 @@ export function StudentFormModal({
 
   const { mutateAsync: createStudent, isPending: isCreating } = useCreateStudent()
   const { mutateAsync: updateStudent, isPending: isUpdating } = useUpdateStudent()
+  const queryClient = useQueryClient()
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const isPending = isCreating || isUpdating
+  const busy = isPending || isUploadingPhoto
 
   const {
     register,
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { errors },
   } = useForm<StudentFormValues>({
     resolver: zodResolver(schema),
     defaultValues,
   })
+
+  const name = watch('student_name')
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -91,9 +101,27 @@ export function StudentFormModal({
         await updateStudent({ id: student.student_id, payload: values })
         toast.success('Aluno atualizado com sucesso')
       } else {
-        await createStudent({ ...values, student_status: 1 })
-        toast.success('Aluno criado com sucesso')
+        const created = await createStudent({ ...values, student_status: 1 })
+
+        if (photoFile) {
+          setIsUploadingPhoto(true)
+          try {
+            await uploadStudentPhoto(created.student_id, photoFile)
+            queryClient.invalidateQueries({ queryKey: ['students'] })
+            toast.success('Aluno criado com sucesso')
+          } catch {
+            toast.warning(
+              'Aluno criado, mas não foi possível enviar a foto. Você pode adicioná-la depois nos detalhes do aluno.',
+            )
+          } finally {
+            setIsUploadingPhoto(false)
+          }
+        } else {
+          toast.success('Aluno criado com sucesso')
+        }
+
         reset(defaultValues)
+        setPhotoFile(null)
       }
       onClose()
     } catch (error) {
@@ -103,6 +131,8 @@ export function StudentFormModal({
 
   function handleClose() {
     reset(defaultValues)
+    setPhotoFile(null)
+    setIsUploadingPhoto(false)
     onClose()
   }
 
@@ -114,6 +144,20 @@ export function StudentFormModal({
       className="max-w-lg"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        {!isEditing && (
+          <div className="flex flex-col items-center gap-2">
+            <PhotoUpload
+              currentPhoto={null}
+              name={name}
+              size="xl"
+              disabled={busy}
+              isUploading={isUploadingPhoto}
+              onFileSelected={setPhotoFile}
+            />
+            <p className="text-xs text-slate-500">Foto do aluno (opcional)</p>
+          </div>
+        )}
+
         <div className="flex flex-col gap-3">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
             Dados pessoais
@@ -186,18 +230,20 @@ export function StudentFormModal({
             type="button"
             variant="ghost"
             onClick={handleClose}
-            disabled={isPending}
+            disabled={busy}
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending
-              ? isEditing
-                ? 'Salvando...'
-                : 'Criando...'
-              : isEditing
-                ? 'Salvar'
-                : 'Criar Aluno'}
+          <Button type="submit" disabled={busy}>
+            {isUploadingPhoto
+              ? 'Enviando foto...'
+              : isPending
+                ? isEditing
+                  ? 'Salvando...'
+                  : 'Criando...'
+                : isEditing
+                  ? 'Salvar'
+                  : 'Criar Aluno'}
           </Button>
         </div>
       </form>
