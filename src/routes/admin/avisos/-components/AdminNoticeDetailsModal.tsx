@@ -30,7 +30,7 @@ export function AdminNoticeDetailsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
           <div className="flex items-center gap-2">
             <Eye className="h-4 w-4 text-blue-400" />
@@ -108,7 +108,7 @@ export function AdminNoticeDetailsModal({
                   {visibilities.map((visibility) => (
                     <div
                       key={visibility.notice_visibility_id}
-                      className="rounded-lg border border-slate-800 bg-slate-900/70 px-3 py-2"
+                      className="rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2"
                     >
                       <p className="text-sm font-medium text-slate-200">
                         {teacherNameById.get(visibility.teacher_id) ??

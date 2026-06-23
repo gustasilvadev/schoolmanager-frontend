@@ -115,8 +115,9 @@ export function ClassTable({
 
   if (isLoading) {
     return (
-      <div className="flex h-40 items-center justify-center rounded-xl border border-slate-800">
-        <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
+      <div className="flex h-40 flex-col items-center justify-center gap-3 rounded-xl border border-slate-800">
+        <Loader2 className="h-7 w-7 animate-spin text-blue-400" />
+        <p className="text-sm text-slate-400">Carregando turmas...</p>
       </div>
     )
   }
