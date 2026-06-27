@@ -1,0 +1,20 @@
+# Dockerfile.aws — build do frontend para AWS (servido na raiz do ALB).
+# NÃO altera o .env.production (config da faculdade): cria um .env.production.local
+# apenas dentro da imagem. No Vite, .env.production.local tem precedência máxima,
+# então estes valores vencem só no build da AWS.
+#   VITE_API_BASE=/api   -> chamadas same-origin; o ALB roteia /api/* para o gateway
+#   VITE_APP_BASE=/      -> app servido na raiz (e não em /20261prj5/schoolmanagement/)
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN printf 'VITE_API_BASE=/api\nVITE_APP_BASE=/\n' > .env.production.local
+RUN npm run build
+
+FROM node:20-alpine
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=build /app/dist /app/dist
+EXPOSE 9518
+CMD ["serve", "-s", "dist", "-l", "9518"]
